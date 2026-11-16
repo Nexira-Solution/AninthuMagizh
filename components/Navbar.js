@@ -9,22 +9,22 @@ import { useCart } from './CartContext';
 import { useWishlist } from './WhishlistContext';
 import CouponMarquee from './CouponMarquee';
 
-const STORE_NAME = 'Shea Fashions';
+const STORE_NAME = 'Aninthu Magizh';
 
 // WhatsApp number that receives bulk enquiries: country code + number, digits only
 // (example: 919876543210). Set NEXT_PUBLIC_WHATSAPP_NUMBER in .env.local, or pass
 // a `whatsappNumber` prop to <Navbar />.
-const DEFAULT_WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919092955054';
+const DEFAULT_WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '916369116002';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
 // Keep these tokens in sync with CouponMarquee.
-const PURPLE = '#4B087A';      // royal purple: hover / active text, dropdown headings
-const INK = '#24052F';         // primary text (deep purple)
-const INK_FAINT = '#6E5A7C';   // secondary text (muted purple-grey)
-const GOLD = '#F7B900';        // buttons, badges, premium accents
-const HAIRLINE = '#D9B4E8';    // soft lavender borders
-const PAPER = '#FFF5E8';       // ivory background
-const RUST = '#B0503A';        // form errors
+const PRIMARY = '#8F1538';     // crimson: hover / active text, dropdown headings
+const INK = '#29211E';         // primary text
+const INK_FAINT = '#7A6A63';   // secondary text (derived from text)
+const GOLD = '#C58A08';        // secondary: badges, dropdown top border, send button
+const HAIRLINE = '#E5CDD3';    // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';       // background
+const RUST = '#B0503A';        // form errors (kept as-is so errors read as a warning)
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const SHOP_GROUPS = [
@@ -139,7 +139,7 @@ function BulkEnquiryModal({ whatsappNumber, categories, products, onClose }) {
   return (
     <div
       className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:px-4"
-      style={{ background: 'rgba(36,5,47,0.5)' }}
+      style={{ background: 'rgba(41,33,30,0.5)' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -367,7 +367,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
                 <div className="relative" onMouseEnter={openShop} onMouseLeave={scheduleCloseShop}>
                   <button
                     className="text-[13px] font-normal tracking-[1.5px] uppercase transition-colors"
-                    style={{ color: shopOpen ? PURPLE : INK }}
+                    style={{ color: shopOpen ? PRIMARY : INK }}
                   >
                     Shop
                   </button>
@@ -382,7 +382,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
                           <div key={group.key}>
                             <div
                               className="text-[11px] font-semibold tracking-[1.5px] uppercase mb-3 pb-2"
-                              style={{ color: PURPLE, borderBottom: `1px solid ${HAIRLINE}` }}
+                              style={{ color: PRIMARY, borderBottom: `1px solid ${HAIRLINE}` }}
                             >
                               {group.label}
                             </div>
@@ -395,7 +395,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
                                     onClick={() => setShopOpen(false)}
                                     className="py-0.5 text-[13px] font-medium tracking-wide transition-colors block"
                                     style={{ color: INK }}
-                                    onMouseEnter={(e) => (e.currentTarget.style.color = PURPLE)}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = PRIMARY)}
                                     onMouseLeave={(e) => (e.currentTarget.style.color = INK)}
                                   >
                                     {c.name}
@@ -411,7 +411,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
                                           onClick={() => setShopOpen(false)}
                                           className="py-1 text-[12px] tracking-wide transition-colors"
                                           style={{ color: INK_FAINT }}
-                                          onMouseEnter={(e) => (e.currentTarget.style.color = PURPLE)}
+                                          onMouseEnter={(e) => (e.currentTarget.style.color = PRIMARY)}
                                           onMouseLeave={(e) => (e.currentTarget.style.color = INK_FAINT)}
                                         >
                                           {sub.name}
@@ -442,7 +442,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
                   onClick={openEnquiry}
                   className="text-[13px] font-normal tracking-[1.5px] uppercase transition-colors"
                   style={{ color: INK }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = PURPLE)}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = PRIMARY)}
                   onMouseLeave={(e) => (e.currentTarget.style.color = INK)}
                 >
                   Bulk Enquiry
@@ -585,7 +585,7 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
               <div key={group.key} style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
                 <button
                   className="w-full flex items-center justify-between py-3 pl-3 text-[13px] tracking-wide uppercase"
-                  style={{ color: mobileGroupOpen === group.key ? PURPLE : INK_FAINT }}
+                  style={{ color: mobileGroupOpen === group.key ? PRIMARY : INK_FAINT }}
                   onClick={() => setMobileGroupOpen((v) => (v === group.key ? null : group.key))}
                 >
                   {group.label}

@@ -3,14 +3,16 @@
 import { X } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 
-// Design tokens — same teal / gold / cream system as the rest of the site.
-// Palette: #064E4A #C49A45 #FFFDF5 #172A29 #E7DCC5
-const INK = '#172A29';
-const INK_SOFT = '#6B7C7A';
-const TEAL = '#064E4A';
-const WASH = '#F5EFE0';
-const LINE = '#E7DCC5';
-const PAPER = '#FFFDF5';
+// Design tokens: crimson / gold / cream system.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';        // text
+const INK_SOFT = '#7A6A63';   // muted labels (derived from text)
+const PRIMARY = '#8F1538';    // title
+const ACCENT = '#E60062';     // close button hover
+const HIGHLIGHT = '#075447';  // add-on prices
+const WASH = '#F6ECE0';       // placeholder background (derived from background)
+const LINE = '#E5CDD3';       // borders (derived tint of primary)
+const PAPER = '#FFF9F0';      // modal background
 
 export default function OrderItemModal({ item, image, categoryName, productSku, onClose }) {
   if (!item) return null;
@@ -20,17 +22,22 @@ export default function OrderItemModal({ item, image, categoryName, productSku, 
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{ background: 'rgba(23,42,41,0.55)' }}
+      style={{ background: 'rgba(41,33,30,0.55)' }}
       onClick={onClose}
     >
       <div
         className="max-w-sm w-full p-5"
-        style={{ background: PAPER, borderRadius: '6px' }}
+        style={{ background: PAPER, borderRadius: '6px', border: `1px solid ${LINE}` }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-medium pr-4" style={{ color: TEAL }}>{item.name}</h3>
-          <button onClick={onClose} className="shrink-0" style={{ color: INK_SOFT }} aria-label="Close">
+          <h3 className="font-medium pr-4" style={{ color: PRIMARY }}>{item.name}</h3>
+          <button
+            onClick={onClose}
+            className="shrink-0 transition-colors hover:!text-[#E60062]"
+            style={{ color: INK_SOFT }}
+            aria-label="Close"
+          >
             <X size={18} />
           </button>
         </div>
@@ -89,13 +96,17 @@ export default function OrderItemModal({ item, image, categoryName, productSku, 
           {item.pantOption?.name && (
             <p>
               <span style={{ color: INK_SOFT }}>Pant:</span> {item.pantOption.name}
-              {item.pantOption.price > 0 && ` (+${formatINR(item.pantOption.price)})`}
+              {item.pantOption.price > 0 && (
+                <span style={{ color: HIGHLIGHT }}> (+{formatINR(item.pantOption.price)})</span>
+              )}
             </p>
           )}
           {item.shawlOption?.name && (
             <p>
               <span style={{ color: INK_SOFT }}>Shawl:</span> {item.shawlOption.name}
-              {item.shawlOption.price > 0 && ` (+${formatINR(item.shawlOption.price)})`}
+              {item.shawlOption.price > 0 && (
+                <span style={{ color: HIGHLIGHT }}> (+{formatINR(item.shawlOption.price)})</span>
+              )}
             </p>
           )}
           <p><span style={{ color: INK_SOFT }}>Quantity ordered:</span> {item.qty}</p>

@@ -8,28 +8,26 @@ const display = Fraunces({ subsets: ['latin'], weight: ['400'], variable: '--fon
 const body = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-body' });
 
 // Business details
-const STORE_NAME = 'Purple Queen';
+const STORE_NAME = 'Aninthu Magizh';
 const BRAND_NAME = 'Kids & Ladies Corner';
-const PHONES = ['9791368249', '8300770783'];
-const EMAIL = 'purple.queen2512@gmail.com';
-const DEFAULT_WHATSAPP = '919791368249';
+const PHONES = ['6369116002'];
+const EMAIL = 'tipsready9@gmail.com';
+const DEFAULT_WHATSAPP = '916369116002';
 
 // Social links. Only plain data here: the icons are mapped by `key` inside FooterLinks
 // (icon components can't be passed from a server component to a client component).
 const SOCIALS = [
-  { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/shery_alex_hannie' },
-  { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/share/1D1tEus9HB/' },
-  { key: 'youtube', label: 'YouTube', href: 'https://youtube.com/@purplequeen-ft2pn' },
+  { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/aninthu_magizh_manufacturer' },
 ];
 
-// Palette: #6B2682 #F7B900 #FFF5E8 #24052F #D9B4E8
-// Medium purple footer with ivory text and gold accents.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+// Crimson footer with cream text and light gold accents.
 // Keep BG in sync with CouponMarquee and Navbar. Keep the rest in sync with FooterLinks.
-const BG = '#6B2682';
-const ACCENT = '#F7B900';
-const TEXT = '#FFF5E8';
-const TEXT_SOFT = 'rgba(255,245,232,0.75)';
-const LINE = 'rgba(255,245,232,0.2)';
+const BG = '#8F1538';                    // primary crimson
+const ACCENT = '#E8B84A';                // light gold (derived from secondary) for contrast on crimson
+const TEXT = '#FFF9F0';                  // cream
+const TEXT_SOFT = 'rgba(255,249,240,0.75)';
+const LINE = 'rgba(255,249,240,0.2)';
 
 async function getCategories() {
   await dbConnect();
@@ -64,8 +62,9 @@ export default async function Footer() {
           <p className="flex items-start gap-1.5 text-xs leading-relaxed" style={{ color: TEXT_SOFT }}>
             <MapPin size={13} className="shrink-0 mt-0.5" style={{ color: ACCENT }} />
             <span>
-              Jino Complex, College Road,<br />
-              Nithiravilai
+              Ilavarasi, Ganapathy Nagar,<br />
+              Rayarpalayam, Palladam,<br />
+              Tiruppur, Tamil Nadu - 641664
             </span>
           </p>
 

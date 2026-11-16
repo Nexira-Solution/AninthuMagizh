@@ -13,9 +13,11 @@ export const metadata = {
   description: 'Products on offer right now.',
 };
 
-const PURPLE = '#4B087A';
-const INK_FAINT = '#7A6685';
-const PAPER = '#FFF5E8';
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const PRIMARY = '#8F1538';
+const SECONDARY = '#C58A08';
+const INK_FAINT = '#8A7A70';
+const PAPER = '#FFF9F0';
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 export default async function DiscountsPage() {
@@ -29,16 +31,17 @@ export default async function DiscountsPage() {
   );
 
   return (
-    <div style={{ background: PAPER }} className="min-h-[60vh]">
+    <div style={{ background: PAPER }} className="min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-12">
         <h1
           className="text-xl sm:text-2xl font-bold tracking-[3px] uppercase text-center"
-          style={{ color: PURPLE, fontFamily: FONT_SANS }}
+          style={{ color: PRIMARY, fontFamily: FONT_SANS }}
         >
           Discount Offers
         </h1>
+        <div className="w-12 h-[2px] mx-auto mt-3" style={{ background: SECONDARY }} />
         <p
-          className="text-center text-sm font-light mt-2 mb-8"
+          className="text-center text-sm font-light mt-3 mb-8"
           style={{ color: INK_FAINT, fontFamily: FONT_SANS }}
         >
           Offer prices apply to items added from this page.

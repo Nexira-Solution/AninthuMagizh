@@ -5,7 +5,11 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 
-const PAPER = '#FFF5E8';
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PAPER = '#FFF9F0';                    // cream: icons and text on the controls
+const OVERLAY = 'rgba(41,33,30,0.95)';      // dark brown (from the text color) backdrop
+const CONTROL_BG = 'rgba(255,249,240,0.15)'; // translucent cream control fill
+
 const MIN = 1;
 const MAX = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -139,10 +143,10 @@ export default function ImageZoomModal({ images, index, onIndexChange, onClose, 
   const onWheel = (e) => applyScale(scale * (e.deltaY < 0 ? 1.15 : 1 / 1.15));
 
   const btn = 'w-10 h-10 flex items-center justify-center rounded-full active:scale-90 transition-transform';
-  const btnStyle = { background: 'rgba(255,245,232,0.15)', color: PAPER };
+  const btnStyle = { background: CONTROL_BG, color: PAPER };
 
   return createPortal(
-    <div className="fixed inset-0" style={{ background: 'rgba(36,5,47,0.95)', zIndex: 10000 }}>
+    <div className="fixed inset-0" style={{ background: OVERLAY, zIndex: 10000 }}>
       {/* Image area */}
       <div
         ref={boxRef}

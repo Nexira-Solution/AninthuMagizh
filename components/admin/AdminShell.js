@@ -9,15 +9,15 @@ import {
   Receipt
 } from 'lucide-react';
 
-// Design tokens: same royal purple / gold / ivory system as the rest of the site.
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const INK = '#24052F';        // deep purple for text
-const INK_SOFT = '#6E5A7C';   // muted purple-grey for secondary text
-const PURPLE = '#4B087A';     // royal purple: brand name, active nav item
-const GOLD = '#F7B900';       // active item accent
-const WASH = '#F6EAF9';       // hover fill (light lavender tint)
-const LINE = '#D9B4E8';       // soft lavender borders
-const PAPER = '#FFF5E8';      // ivory background
+// Design tokens: same crimson / gold / cream system as the rest of the site.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';        // main text
+const INK_SOFT = '#8A7A70';   // muted warm gray for secondary text
+const PRIMARY = '#8F1538';    // crimson: brand name, active nav item
+const GOLD = '#C58A08';       // active item accent
+const WASH = '#F6EADB';       // hover fill (light warm tint)
+const LINE = '#E8D5C4';       // soft warm borders
+const PAPER = '#FFF9F0';      // cream background
 
 const NAV = [
   { href: '/admin',            label: 'Dashboard',       icon: LayoutDashboard },
@@ -28,13 +28,13 @@ const NAV = [
   { href: '/admin/invoices',   label: 'Invoices',        icon: Receipt },
   { href: '/admin/inventory',  label: 'Inventory',       icon: Boxes },
   { href: '/admin/notify',     label: 'Notify Requests', icon: BellRing },
-  { href: '/admin/combos',     label: 'Combo Offers',    icon: Layers },
+  // { href: '/admin/combos',     label: 'Combo Offers',    icon: Layers },
   { href: '/admin/banners',    label: 'Banners',         icon: ImageIcon },
-  { href: '/admin/reels',      label: 'Shop by Reels',   icon: Clapperboard },
-  { href: '/admin/reviews',    label: 'Reviews',         icon: Star },
-  { href: '/admin/coupons',    label: 'Coupons',         icon: Ticket },
+  // { href: '/admin/reels',      label: 'Shop by Reels',   icon: Clapperboard },
+  // { href: '/admin/reviews',    label: 'Reviews',         icon: Star },
+  // { href: '/admin/coupons',    label: 'Coupons',         icon: Ticket },
   { href: '/admin/reports',    label: 'Sales Reports',   icon: FileBarChart },
-  { href: '/admin/cofounder',  label: 'AI Cofounder',    icon: Sparkles },
+  // { href: '/admin/cofounder',  label: 'AI Cofounder',    icon: Sparkles },
   { href: '/admin/settings',   label: 'Settings',        icon: SettingsIcon },
 ];
 
@@ -54,7 +54,7 @@ export default function AdminShell({ admin, children }) {
       {open && (
         <div
           className="fixed inset-0 z-40 lg:hidden"
-          style={{ background: 'rgba(36,5,47,0.45)' }}
+          style={{ background: 'rgba(41,33,30,0.45)' }}
           onClick={() => setOpen(false)}
         />
       )}
@@ -75,8 +75,8 @@ export default function AdminShell({ admin, children }) {
           style={{ borderBottom: `1px solid ${LINE}` }}
         >
           <div className="flex flex-col leading-tight">
-            <span className="font-medium text-base" style={{ color: PURPLE }}>
-              Purple Queen
+            <span className="font-medium text-base" style={{ color: PRIMARY }}>
+              Aninthu Magizh
             </span>
             <span
               className="text-[10px] tracking-widest uppercase mt-0.5"
@@ -107,7 +107,7 @@ export default function AdminShell({ admin, children }) {
                 className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-colors"
                 style={{
                   borderRadius: '4px',
-                  background: active ? PURPLE : 'transparent',
+                  background: active ? PRIMARY : 'transparent',
                   color: active ? PAPER : INK_SOFT,
                   // thin gold bar on the active item
                   boxShadow: active ? `inset 3px 0 0 ${GOLD}` : 'none',
@@ -166,8 +166,8 @@ export default function AdminShell({ admin, children }) {
           <button onClick={() => setOpen(true)} style={{ color: INK }} aria-label="Open menu">
             <Menu size={22} />
           </button>
-          <span className="font-medium text-base" style={{ color: PURPLE }}>
-            Purple Queen Admin
+          <span className="font-medium text-base" style={{ color: PRIMARY }}>
+            Aninthu Magizh Admin
           </span>
         </header>
 

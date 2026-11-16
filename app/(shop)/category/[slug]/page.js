@@ -149,19 +149,20 @@ export default async function CategoryPage({ params, searchParams }) {
       {category.parent && (
         <Link
           href={`/category/${category.parent.slug}`}
-          className="text-sm text-neutral-500 hover:text-neutral-800 inline-flex items-center gap-1 mb-3"
+          className="text-sm text-brand-inksoft hover:text-brand-primary inline-flex items-center gap-1 mb-3 transition-colors"
         >
           ← {category.parent.name}
         </Link>
       )}
 
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-brand-primary">
           {heading}
         </h1>
+        <div className="w-12 h-[2px] mt-3 bg-brand-secondary" />
 
         {category.description && (
-          <p className="text-sm mt-1.5 text-neutral-500">{category.description}</p>
+          <p className="text-sm mt-3 text-brand-inksoft">{category.description}</p>
         )}
       </div>
 
@@ -175,7 +176,7 @@ export default async function CategoryPage({ params, searchParams }) {
               prefetch={false}
               className="flex-shrink-0 w-28 flex flex-col items-center gap-2 group"
             >
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-pink-50 border border-neutral-100">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-brand-wash border border-brand-line group-hover:border-brand-secondary transition-colors">
                 {sub.image && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -187,7 +188,7 @@ export default async function CategoryPage({ params, searchParams }) {
                   />
                 )}
               </div>
-              <span className="text-xs font-medium text-neutral-700 text-center leading-tight">
+              <span className="text-xs font-medium text-brand-ink text-center leading-tight group-hover:text-brand-primary transition-colors">
                 {sub.name}
               </span>
             </Link>
@@ -200,8 +201,8 @@ export default async function CategoryPage({ params, searchParams }) {
       {cards.length === 0 ? (
         <div className="text-center py-20">
           <span className="text-4xl">🛍️</span>
-          <p className="mt-3 text-base font-medium text-neutral-900">No products found in this category yet.</p>
-          <p className="text-sm mt-1 text-neutral-400">Check back soon — new arrivals every week!</p>
+          <p className="mt-3 text-base font-medium text-brand-ink">No products found in this category yet.</p>
+          <p className="text-sm mt-1 text-brand-inksoft">Check back soon — new arrivals every week!</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -215,21 +216,21 @@ export default async function CategoryPage({ params, searchParams }) {
       {totalPages > 1 && (
         <nav className="mt-12 flex items-center justify-center gap-6 text-sm" aria-label="Pagination">
           {page > 1 ? (
-            <Link href={pageHref(page - 1)} prefetch={false} className="text-neutral-900 hover:underline">
+            <Link href={pageHref(page - 1)} prefetch={false} className="text-brand-primary hover:underline">
               ← Previous
             </Link>
           ) : (
-            <span className="text-neutral-300">← Previous</span>
+            <span className="text-brand-line">← Previous</span>
           )}
-          <span className="text-neutral-400 text-xs tracking-wide">
+          <span className="text-brand-inksoft text-xs tracking-wide">
             Page {page} of {totalPages}
           </span>
           {page < totalPages ? (
-            <Link href={pageHref(page + 1)} prefetch={false} className="text-neutral-900 hover:underline">
+            <Link href={pageHref(page + 1)} prefetch={false} className="text-brand-primary hover:underline">
               Next →
             </Link>
           ) : (
-            <span className="text-neutral-300">Next →</span>
+            <span className="text-brand-line">Next →</span>
           )}
         </nav>
       )}

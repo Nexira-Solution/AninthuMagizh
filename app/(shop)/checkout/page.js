@@ -8,23 +8,24 @@ import { useCart, cartKey, formatSelections } from '@/components/CartContext';
 import { formatINR } from '@/lib/utils';
 import { INDIAN_STATES } from '@/lib/indianStates';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const INK = '#24052F';           // deep plum text
-const INK_SOFT = '#7A6685';      // muted plum-gray
-const PURPLE = '#4B087A';        // royal purple (headings, prices, links)
-const GOLD = '#F7B900';          // main buttons
-const WASH = '#F3E6F8';          // very light lavender fill
-const LINE = '#D9B4E8';          // lavender borders
-const PAPER = '#FFF5E8';         // ivory
-const RUST = '#B0503A';          // kept as-is: errors need to read as warnings
-const RUST_WASH = '#FBEAE6';
-const PURPLE_DISABLED = '#B9A0C9'; // muted purple for the disabled Apply button
-const GOLD_DISABLED = '#EBD9A0';   // muted gold for the disabled submit button
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';             // headings, prices, links
+const SECONDARY = '#C58A08';           // main buttons
+const BG = '#FFF9F0';                  // page background
+const ACCENT = '#E60062';              // errors / warnings
+const ACCENT_WASH = '#FDE6EF';         // light tint behind error messages
+const HIGHLIGHT = '#075447';           // savings, free shipping, radio
+const INK = '#29211E';                 // main text
+const INK_SOFT = '#8A7A70';            // muted text
+const WASH = '#F6EADB';                // light warm fill
+const LINE = '#E8D5C4';                // soft borders
+const PRIMARY_DISABLED = '#CFA3B1';    // muted crimson for the disabled Apply button
+const SECONDARY_DISABLED = '#E6D3A3';  // muted gold for the disabled submit button
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const inputClass =
   'w-full text-sm outline-none transition-colors px-3.5 py-2.5';
-const inputStyle = { border: `1px solid ${LINE}`, borderRadius: '3px', color: INK, background: PAPER };
+const inputStyle = { border: `1px solid ${LINE}`, borderRadius: '3px', color: INK, background: BG };
 
 const sectionHeadClass = 'text-[11px] font-medium uppercase tracking-[0.18em] mb-4';
 
@@ -321,10 +322,10 @@ export default function CheckoutPage() {
           key: orderData.keyId,
           amount: orderData.order.amount,
           currency: 'INR',
-          name: 'Purple Queen',
+          name: 'Aninthu Magizh',
           order_id: orderData.order.id,
           prefill: { name: form.name, contact: form.phone, email: form.email },
-          theme: { color: '#4B087A' },
+          theme: { color: '#8F1538' },
           handler: async function (response) {
             // Fast path — if this fails or never runs, the webhook creates
             // the same order server-side. /api/orders is idempotent on
@@ -412,230 +413,232 @@ export default function CheckoutPage() {
   const applyDisabled = applyingCoupon || !coupon.trim();
 
   return (
-    <div className="max-w-4xl mx-auto px-5 sm:px-8 py-8 sm:py-14" style={{ background: PAPER }}>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
+    <div className="min-h-screen" style={{ background: BG }}>
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-8 sm:py-14">
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
-      <h1 className="text-[24px] sm:text-[28px] mb-7" style={{ fontFamily: FONT_SERIF, color: PURPLE }}>
-        Checkout
-      </h1>
+        <h1 className="text-[24px] sm:text-[28px] mb-7" style={{ fontFamily: FONT_SERIF, color: PRIMARY }}>
+          Checkout
+        </h1>
 
-      {showFreeShippingBanner && (
-        <div
-          className="text-xs py-2.5 px-4 mb-6"
-          style={{ background: WASH, color: INK_SOFT, borderRadius: '3px' }}
-        >
-          Add <strong style={{ color: PURPLE }}>{formatINR(amountToFreeShipping)}</strong> more to get{' '}
-          <strong style={{ color: PURPLE }}>free shipping</strong>
-        </div>
-      )}
-
-      {!deliverable && form.state && (
-        <div
-          className="text-xs py-2.5 px-4 mb-6"
-          style={{ background: RUST_WASH, color: RUST, borderRadius: '3px' }}
-        >
-          Sorry, we don&apos;t deliver to <strong>{form.state}</strong> yet. Please choose another state.
-        </div>
-      )}
-
-      <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 sm:gap-12">
-
-        <div>
-          <p className={sectionHeadClass} style={{ color: PURPLE }}>Shipping Details</p>
-          <div className="space-y-3">
-            <SSRKInput placeholder="Full Name *" autoComplete="name" value={form.name} onChange={(e) => update('name', e.target.value)} />
-            <SSRKInput placeholder="Phone Number *" type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
-            <SSRKInput placeholder="Email (optional)" type="email" autoComplete="email" value={form.email} onChange={(e) => update('email', e.target.value)} />
-            <SSRKInput placeholder="Address Line 1 *" autoComplete="address-line1" value={form.line1} onChange={(e) => update('line1', e.target.value)} />
-            <SSRKInput placeholder="Address Line 2" autoComplete="address-line2" value={form.line2} onChange={(e) => update('line2', e.target.value)} />
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                placeholder="City *"
-                autoComplete="address-level2"
-                value={form.city}
-                onChange={(e) => update('city', e.target.value)}
-                className={inputClass}
-                style={inputStyle}
-              />
-              <select
-                autoComplete="address-level1"
-                value={form.state}
-                onChange={(e) => update('state', e.target.value)}
-                className={inputClass}
-                style={{ ...inputStyle, color: form.state ? INK : INK_SOFT }}
-              >
-                <option value="">State *</option>
-                {INDIAN_STATES.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                placeholder="Pincode *"
-                inputMode="numeric"
-                maxLength={6}
-                autoComplete="postal-code"
-                value={form.pincode}
-                onChange={(e) => update('pincode', e.target.value)}
-                className={inputClass}
-                style={inputStyle}
-              />
-              <input
-                placeholder="Landmark"
-                value={form.landmark}
-                onChange={(e) => update('landmark', e.target.value)}
-                className={inputClass}
-                style={inputStyle}
-              />
-            </div>
+        {showFreeShippingBanner && (
+          <div
+            className="text-xs py-2.5 px-4 mb-6"
+            style={{ background: WASH, color: INK_SOFT, borderRadius: '3px' }}
+          >
+            Add <strong style={{ color: PRIMARY }}>{formatINR(amountToFreeShipping)}</strong> more to get{' '}
+            <strong style={{ color: HIGHLIGHT }}>free shipping</strong>
           </div>
-        </div>
+        )}
 
-        <div className="flex flex-col gap-8">
+        {!deliverable && form.state && (
+          <div
+            className="text-xs py-2.5 px-4 mb-6"
+            style={{ background: ACCENT_WASH, color: ACCENT, borderRadius: '3px' }}
+          >
+            Sorry, we don&apos;t deliver to <strong>{form.state}</strong> yet. Please choose another state.
+          </div>
+        )}
+
+        <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 sm:gap-12">
 
           <div>
-            <p className={sectionHeadClass} style={{ color: PURPLE }}>Order Summary</p>
-
-            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              {items.map((i) => {
-                const selText = formatSelections(i);
-                return (
-                  <div key={cartKey(i)} className="flex justify-between text-sm py-1 gap-2" style={{ color: INK_SOFT }}>
-                    <span className="min-w-0">
-                      <span className="block truncate">
-                        {i.name} ({[i.color, i.packDetails ? '' : i.size, i.sleeveType, i.zipType].filter(Boolean).join('/')}) ×{i.qty}
-                        {i.isCombo && i.pieces > 1 ? ` · ${i.qty * i.pieces} pcs` : ''}
-                      </span>
-                      {selText && (
-                        <span className="block text-xs truncate" style={{ opacity: 0.85 }}>{selText}</span>
-                      )}
-                    </span>
-                    <span className="shrink-0" style={{ color: INK }}>{formatINR(i.price * i.qty)}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Coupon: user types the code, then applies it */}
-            <div className="mt-4">
-              <div className="flex gap-2">
+            <p className={sectionHeadClass} style={{ color: PRIMARY }}>Shipping Details</p>
+            <div className="space-y-3">
+              <SSRKInput placeholder="Full Name *" autoComplete="name" value={form.name} onChange={(e) => update('name', e.target.value)} />
+              <SSRKInput placeholder="Phone Number *" type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+              <SSRKInput placeholder="Email (optional)" type="email" autoComplete="email" value={form.email} onChange={(e) => update('email', e.target.value)} />
+              <SSRKInput placeholder="Address Line 1 *" autoComplete="address-line1" value={form.line1} onChange={(e) => update('line1', e.target.value)} />
+              <SSRKInput placeholder="Address Line 2" autoComplete="address-line2" value={form.line2} onChange={(e) => update('line2', e.target.value)} />
+              <div className="grid grid-cols-2 gap-3">
                 <input
-                  placeholder="Coupon code"
-                  value={coupon}
-                  disabled={Boolean(appliedCoupon) || applyingCoupon}
-                  onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => e.key === 'Enter' && !appliedCoupon && applyCoupon()}
-                  autoCapitalize="characters"
-                  className={`${inputClass} flex-1 uppercase`}
-                  style={{ ...inputStyle, opacity: appliedCoupon ? 0.7 : 1 }}
+                  placeholder="City *"
+                  autoComplete="address-level2"
+                  value={form.city}
+                  onChange={(e) => update('city', e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
                 />
-                {appliedCoupon ? (
-                  <button
-                    type="button"
-                    onClick={removeCoupon}
-                    className="px-4 text-sm shrink-0 transition-colors"
-                    style={{ border: `1px solid ${LINE}`, color: INK_SOFT, background: PAPER, borderRadius: '3px' }}
-                  >
-                    Remove
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => applyCoupon()}
-                    disabled={applyDisabled}
-                    className="px-4 text-sm shrink-0 transition-colors disabled:cursor-not-allowed"
-                    style={{
-                      border: `1px solid ${applyDisabled ? PURPLE_DISABLED : PURPLE}`,
-                      color: applyDisabled ? PURPLE_DISABLED : PURPLE,
-                      background: PAPER,
-                      borderRadius: '3px',
-                    }}
-                  >
-                    {applyingCoupon ? 'Applying…' : 'Apply'}
-                  </button>
+                <select
+                  autoComplete="address-level1"
+                  value={form.state}
+                  onChange={(e) => update('state', e.target.value)}
+                  className={inputClass}
+                  style={{ ...inputStyle, color: form.state ? INK : INK_SOFT }}
+                >
+                  <option value="">State *</option>
+                  {INDIAN_STATES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  placeholder="Pincode *"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoComplete="postal-code"
+                  value={form.pincode}
+                  onChange={(e) => update('pincode', e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                />
+                <input
+                  placeholder="Landmark"
+                  value={form.landmark}
+                  onChange={(e) => update('landmark', e.target.value)}
+                  className={inputClass}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-8">
+
+            <div>
+              <p className={sectionHeadClass} style={{ color: PRIMARY }}>Order Summary</p>
+
+              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {items.map((i) => {
+                  const selText = formatSelections(i);
+                  return (
+                    <div key={cartKey(i)} className="flex justify-between text-sm py-1 gap-2" style={{ color: INK_SOFT }}>
+                      <span className="min-w-0">
+                        <span className="block truncate">
+                          {i.name} ({[i.color, i.packDetails ? '' : i.size, i.sleeveType, i.zipType].filter(Boolean).join('/')}) ×{i.qty}
+                          {i.isCombo && i.pieces > 1 ? ` · ${i.qty * i.pieces} pcs` : ''}
+                        </span>
+                        {selText && (
+                          <span className="block text-xs truncate" style={{ opacity: 0.85 }}>{selText}</span>
+                        )}
+                      </span>
+                      <span className="shrink-0" style={{ color: INK }}>{formatINR(i.price * i.qty)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Coupon: user types the code, then applies it */}
+              <div className="mt-4">
+                <div className="flex gap-2">
+                  <input
+                    placeholder="Coupon code"
+                    value={coupon}
+                    disabled={Boolean(appliedCoupon) || applyingCoupon}
+                    onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => e.key === 'Enter' && !appliedCoupon && applyCoupon()}
+                    autoCapitalize="characters"
+                    className={`${inputClass} flex-1 uppercase`}
+                    style={{ ...inputStyle, opacity: appliedCoupon ? 0.7 : 1 }}
+                  />
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      onClick={removeCoupon}
+                      className="px-4 text-sm shrink-0 transition-colors hover:text-[#E60062]"
+                      style={{ border: `1px solid ${LINE}`, color: INK_SOFT, background: BG, borderRadius: '3px' }}
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => applyCoupon()}
+                      disabled={applyDisabled}
+                      className="px-4 text-sm shrink-0 transition-colors disabled:cursor-not-allowed"
+                      style={{
+                        border: `1px solid ${applyDisabled ? PRIMARY_DISABLED : PRIMARY}`,
+                        color: applyDisabled ? PRIMARY_DISABLED : PRIMARY,
+                        background: BG,
+                        borderRadius: '3px',
+                      }}
+                    >
+                      {applyingCoupon ? 'Applying…' : 'Apply'}
+                    </button>
+                  )}
+                </div>
+                {appliedCoupon && (
+                  <p className="text-xs mt-1.5" style={{ color: HIGHLIGHT }}>
+                    {appliedCoupon} applied. You saved {formatINR(discount)}
+                  </p>
                 )}
               </div>
-              {appliedCoupon && (
-                <p className="text-xs mt-1.5" style={{ color: PURPLE }}>
-                  {appliedCoupon} applied. You saved {formatINR(discount)}
-                </p>
-              )}
-            </div>
 
-            <div style={{ height: '1px', background: LINE }} className="my-4" />
+              <div style={{ height: '1px', background: LINE }} className="my-4" />
 
-            <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between" style={{ color: INK_SOFT }}>
-                <span>Subtotal</span>
-                <span>{formatINR(subtotal)}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between" style={{ color: PURPLE }}>
-                  <span>Discount{appliedCoupon ? ` (${appliedCoupon})` : ''}</span>
-                  <span>−{formatINR(discount)}</span>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex justify-between" style={{ color: INK_SOFT }}>
+                  <span>Subtotal</span>
+                  <span>{formatINR(subtotal)}</span>
                 </div>
-              )}
-              <div className="flex justify-between" style={{ color: INK_SOFT }}>
-                <span>Shipping</span>
-                <span>
-                  {!deliverable
-                    ? <span style={{ color: RUST }}>Not available for {form.state}</span>
-                    : shippingLoading
-                      ? <span style={{ color: INK_SOFT, opacity: 0.6 }}>Calculating…</span>
-                      : shipping === 0
-                        ? <span style={{ color: PURPLE }}>Free</span>
-                        : shipping !== null
-                          ? formatINR(shipping)
-                          : <span style={{ color: INK_SOFT, opacity: 0.6 }}>—</span>
-                  }
+                {discount > 0 && (
+                  <div className="flex justify-between" style={{ color: HIGHLIGHT }}>
+                    <span>Discount{appliedCoupon ? ` (${appliedCoupon})` : ''}</span>
+                    <span>−{formatINR(discount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between" style={{ color: INK_SOFT }}>
+                  <span>Shipping</span>
+                  <span>
+                    {!deliverable
+                      ? <span style={{ color: ACCENT }}>Not available for {form.state}</span>
+                      : shippingLoading
+                        ? <span style={{ color: INK_SOFT, opacity: 0.6 }}>Calculating…</span>
+                        : shipping === 0
+                          ? <span style={{ color: HIGHLIGHT }}>Free</span>
+                          : shipping !== null
+                            ? formatINR(shipping)
+                            : <span style={{ color: INK_SOFT, opacity: 0.6 }}>—</span>
+                    }
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-between mt-3 pt-3 text-base" style={{ borderTop: `1px solid ${LINE}` }}>
+                <span style={{ color: INK }}>Total</span>
+                <span style={{ color: PRIMARY, fontFamily: FONT_SERIF }}>
+                  {deliverable && total !== null ? formatINR(total) : '—'}
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-between mt-3 pt-3 text-base" style={{ borderTop: `1px solid ${LINE}` }}>
-              <span style={{ color: INK }}>Total</span>
-              <span style={{ color: PURPLE, fontFamily: FONT_SERIF }}>
-                {deliverable && total !== null ? formatINR(total) : '—'}
-              </span>
+            <div>
+              <p className={sectionHeadClass} style={{ color: PRIMARY }}>Payment Method</p>
+              <label className="flex items-center gap-3 text-sm cursor-pointer" style={{ color: INK }}>
+                <input
+                  type="radio"
+                  checked={paymentMethod === 'razorpay'}
+                  onChange={() => setPaymentMethod('razorpay')}
+                  className="w-4 h-4"
+                  style={{ accentColor: HIGHLIGHT }}
+                />
+                Pay Online (Cards / UPI / Netbanking)
+              </label>
             </div>
-          </div>
 
-          <div>
-            <p className={sectionHeadClass} style={{ color: PURPLE }}>Payment Method</p>
-            <label className="flex items-center gap-3 text-sm cursor-pointer" style={{ color: INK }}>
-              <input
-                type="radio"
-                checked={paymentMethod === 'razorpay'}
-                onChange={() => setPaymentMethod('razorpay')}
-                className="w-4 h-4"
-                style={{ accentColor: PURPLE }}
-              />
-              Pay Online (Cards / UPI / Netbanking)
-            </label>
+            <button
+              onClick={placeOrder}
+              disabled={placeOrderDisabled}
+              className="w-full py-3.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed"
+              style={{
+                background: placeOrderDisabled ? SECONDARY_DISABLED : SECONDARY,
+                color: INK,
+                borderRadius: '4px',
+              }}
+            >
+              {submitting
+                ? (checkingStock ? 'Checking stock…' : 'Placing Order…')
+                : !deliverable
+                  ? 'Not deliverable to this state'
+                  : shippingLoading
+                    ? 'Calculating shipping…'
+                    : total !== null
+                      ? `Place Order — ${formatINR(total)}`
+                      : 'Place Order'
+              }
+            </button>
           </div>
-
-          <button
-            onClick={placeOrder}
-            disabled={placeOrderDisabled}
-            className="w-full py-3.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed"
-            style={{
-              background: placeOrderDisabled ? GOLD_DISABLED : GOLD,
-              color: INK,
-              borderRadius: '4px',
-            }}
-          >
-            {submitting
-              ? (checkingStock ? 'Checking stock…' : 'Placing Order…')
-              : !deliverable
-                ? 'Not deliverable to this state'
-                : shippingLoading
-                  ? 'Calculating shipping…'
-                  : total !== null
-                    ? `Place Order — ${formatINR(total)}`
-                    : 'Place Order'
-            }
-          </button>
         </div>
       </div>
     </div>

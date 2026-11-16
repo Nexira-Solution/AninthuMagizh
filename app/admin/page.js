@@ -5,14 +5,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { formatINR } from '@/lib/utils';
 import { IndianRupee, ShoppingCart, Package, AlertTriangle } from 'lucide-react';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const GOLD = '#F7B900';         // accent (gold) - icons
-const LINE = '#D9B4E8';         // borders / dividers (lavender)
-const PAPER = '#FFF5E8';        // card background (ivory)
-const PURPLE = '#4B087A';       // royal purple (chart line, key numbers)
-const RUST = '#B0503A';         // errors
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const GOLD = '#C58A08';         // accent (gold) - icons
+const LINE = '#E8D5C4';         // borders / dividers (soft warm)
+const PAPER = '#FFF9F0';        // card background
+const PRIMARY = '#8F1538';      // chart line, key numbers
+const ACCENT = '#E60062';       // errors
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 function StatCell({ icon: Icon, label, value, sub }) {
@@ -79,8 +79,8 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="p-5" style={{ background: PAPER, border: `1px solid ${RUST}`, borderRadius: '2px' }}>
-        <p className="text-sm font-medium mb-1" style={{ color: RUST }}>Failed to load dashboard</p>
+      <div className="p-5" style={{ background: PAPER, border: `1px solid ${ACCENT}`, borderRadius: '2px' }}>
+        <p className="text-sm font-medium mb-1" style={{ color: ACCENT }}>Failed to load dashboard</p>
         <p className="text-sm" style={{ color: INK }}>{error}</p>
         <p className="text-xs mt-2" style={{ color: INK_SOFT }}>
           If this says "Unauthorized", your admin session may have expired — try logging in again.
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-[24px] sm:text-[28px] mb-6" style={{ fontFamily: FONT_SERIF, color: INK }}>
+      <h1 className="text-[24px] sm:text-[28px] mb-6" style={{ fontFamily: FONT_SERIF, color: PRIMARY }}>
         Dashboard
       </h1>
 
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                 <Line
                   type="monotone"
                   dataKey="sales"
-                  stroke={PURPLE}
+                  stroke={PRIMARY}
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4, fill: GOLD, stroke: PAPER, strokeWidth: 2 }}
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
                   style={{ borderTop: i === 0 ? 'none' : `1px solid ${LINE}` }}
                 >
                   <span style={{ color: INK }}>{p.name}</span>
-                  <span className="shrink-0 font-medium" style={{ color: PURPLE }}>{p.soldCount} sold</span>
+                  <span className="shrink-0 font-medium" style={{ color: PRIMARY }}>{p.soldCount} sold</span>
                 </li>
               ))}
             </ul>

@@ -12,16 +12,18 @@ import { applyDiscount } from '@/lib/discount';
 import { formatINR } from '@/lib/utils';
 import { NO_SIZE } from '@/lib/noSize';
 
-// Design tokens: same royal purple / gold / ivory system as the rest of the site.
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const INK = '#24052F';          // deep purple for text
-const INK_SOFT = '#6E5A7C';     // muted purple-grey for labels and hints
-const PURPLE = '#4B087A';       // royal purple: headings, focus, outlines, checkboxes
-const GOLD = '#F7B900';         // primary submit button
-const WASH = '#F6EAF9';         // light lavender tint for upload tiles
-const LINE = '#D9B4E8';         // soft lavender borders
-const PAPER = '#FFF5E8';        // ivory background
-const DISABLED_BG = '#EEE2F2';  // read-only / disabled field fill
+// Design tokens: crimson / gold / cream system.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';          // text
+const INK_SOFT = '#7A6A63';     // muted labels and hints (derived from text)
+const PRIMARY = '#8F1538';      // headings, outlines, checkboxes, action buttons
+const ACCENT = '#E60062';       // input focus border
+const HIGHLIGHT = '#075447';    // discount preview price
+const GOLD = '#C58A08';         // secondary: submit button
+const WASH = '#F6ECE0';         // light cream tint for upload tiles (derived from background)
+const LINE = '#E5CDD3';         // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';        // background
+const DISABLED_BG = '#EFE4DA';  // read-only / disabled field fill (derived)
 
 function emptySize() {
   // price '' = "use the variant price"
@@ -31,7 +33,7 @@ function emptySize() {
 function emptyVariant() {
   return {
     color: '',
-    colorHex: '#4B087A',
+    colorHex: '#8F1538',
     images: [''],
     price: '',
     compareAtPrice: '',
@@ -143,7 +145,7 @@ const cardStyle = {
 const sectionHeadStyle = {
   fontSize: '11px',
   fontWeight: '500',
-  color: PURPLE,
+  color: PRIMARY,
   textTransform: 'uppercase',
   letterSpacing: '0.14em',
   fontFamily: 'sans-serif',
@@ -180,7 +182,7 @@ function ImageSlot({ value, onChange, onRemove, showRemove }) {
           width: '48px',
           height: '48px',
           borderRadius: '4px',
-          border: `1.5px dashed ${PURPLE}`,
+          border: `1.5px dashed ${PRIMARY}`,
           background: WASH,
           display: 'flex',
           alignItems: 'center',
@@ -193,10 +195,10 @@ function ImageSlot({ value, onChange, onRemove, showRemove }) {
         ) : uploading ? (
           <Loader2 size={16} className="animate-spin" style={{ color: INK }} />
         ) : (
-          <Upload size={14} style={{ color: PURPLE }} />
+          <Upload size={14} style={{ color: PRIMARY }} />
         )}
         {uploading && value && (
-          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,245,232,0.7)' }}>
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,249,240,0.7)' }}>
             <Loader2 size={14} className="animate-spin" style={{ color: INK }} />
           </div>
         )}
@@ -208,7 +210,7 @@ function ImageSlot({ value, onChange, onRemove, showRemove }) {
         style={{ ...inputStyle, marginTop: 0, flex: 1 }}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+        onFocus={(e) => (e.target.style.borderColor = ACCENT)}
         onBlur={(e) => (e.target.style.borderColor = LINE)}
       />
 
@@ -235,8 +237,8 @@ function AddonOptionsEditor({ title, options, onAdd, onUpdate, onRemove }) {
           className="flex items-center gap-1 text-sm font-medium px-3 py-1.5"
           style={{
             background: PAPER,
-            color: PURPLE,
-            border: `1px solid ${PURPLE}`,
+            color: PRIMARY,
+            border: `1px solid ${PRIMARY}`,
             borderRadius: '4px',
             fontFamily: 'sans-serif',
             cursor: 'pointer',
@@ -268,7 +270,7 @@ function AddonOptionsEditor({ title, options, onAdd, onUpdate, onRemove }) {
               style={{ ...inputStyle, marginTop: 0 }}
               value={opt.name}
               onChange={(e) => onUpdate(idx, 'name', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
             <input
@@ -277,7 +279,7 @@ function AddonOptionsEditor({ title, options, onAdd, onUpdate, onRemove }) {
               style={{ ...inputStyle, marginTop: 0 }}
               value={opt.price}
               onChange={(e) => onUpdate(idx, 'price', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
             <input
@@ -286,7 +288,7 @@ function AddonOptionsEditor({ title, options, onAdd, onUpdate, onRemove }) {
               style={{ ...inputStyle, marginTop: 0 }}
               value={opt.stock}
               onChange={(e) => onUpdate(idx, 'stock', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
             <input
@@ -294,7 +296,7 @@ function AddonOptionsEditor({ title, options, onAdd, onUpdate, onRemove }) {
               style={{ ...inputStyle, marginTop: 0 }}
               value={opt.sku}
               onChange={(e) => onUpdate(idx, 'sku', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -671,7 +673,7 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -692,7 +694,7 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.category?._id || form.category}
               onChange={(e) => update('category', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             >
               <option value="">Select category</option>
@@ -714,7 +716,7 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.fabric}
               onChange={(e) => update('fabric', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -724,7 +726,7 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={Array.isArray(form.tags) ? form.tags.join(', ') : ''}
               onChange={(e) => update('tags', e.target.value.split(',').map((t) => t.trim()).filter(Boolean))}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -738,7 +740,7 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.weight ?? ''}
               onChange={(e) => update('weight', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -749,7 +751,7 @@ export default function ProductForm({ initial, productId }) {
               rows={3}
               value={form.description}
               onChange={(e) => update('description', e.target.value)}
-              onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
           </div>
@@ -771,7 +773,7 @@ export default function ProductForm({ initial, productId }) {
                       type="button"
                       onClick={() => removeSizeChartImage(idx)}
                       className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: 'rgba(36,5,47,0.7)', color: PAPER }}
+                      style={{ background: 'rgba(41,33,30,0.7)', color: PAPER }}
                       aria-label="Remove size chart image"
                     >
                       <X size={12} />
@@ -783,7 +785,7 @@ export default function ProductForm({ initial, productId }) {
                   disabled={sizeChartUploading}
                   onClick={() => sizeChartFileRef.current?.click()}
                   className="aspect-square flex flex-col items-center justify-center gap-1 disabled:opacity-50"
-                  style={{ borderRadius: '4px', border: `1.5px dashed ${PURPLE}`, background: WASH, color: PURPLE, cursor: 'pointer' }}
+                  style={{ borderRadius: '4px', border: `1.5px dashed ${PRIMARY}`, background: WASH, color: PRIMARY, cursor: 'pointer' }}
                 >
                   {sizeChartUploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                   <span style={{ fontSize: '10px', fontFamily: 'sans-serif' }}>{sizeChartUploading ? 'Uploading…' : 'Add'}</span>
@@ -817,7 +819,7 @@ export default function ProductForm({ initial, productId }) {
                     name="freeShippingMode"
                     checked={shipMode === val}
                     onChange={() => setShipMode(val)}
-                    style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+                    style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
                   />
                   {text}
                 </label>
@@ -827,7 +829,7 @@ export default function ProductForm({ initial, productId }) {
             {shipMode === 'states' && (
               <div className="mt-3">
                 <div className="flex gap-4 mb-2" style={{ fontSize: '12px', fontFamily: 'sans-serif' }}>
-                  <button type="button" style={{ color: PURPLE, fontWeight: 500 }} onClick={() => update('freeShippingStates', [...INDIAN_STATES])}>
+                  <button type="button" style={{ color: PRIMARY, fontWeight: 500 }} onClick={() => update('freeShippingStates', [...INDIAN_STATES])}>
                     Select all
                   </button>
                   <button type="button" style={{ color: INK_SOFT, fontWeight: 500 }} onClick={() => update('freeShippingStates', [])}>
@@ -845,7 +847,7 @@ export default function ProductForm({ initial, productId }) {
                         type="checkbox"
                         checked={(form.freeShippingStates || []).includes(st)}
                         onChange={() => toggleArrayValue('freeShippingStates', st)}
-                        style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+                        style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
                       />
                       {st}
                     </label>
@@ -878,7 +880,7 @@ export default function ProductForm({ initial, productId }) {
                   type="checkbox"
                   checked={!!form[key]}
                   onChange={(e) => update(key, e.target.checked)}
-                  style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+                  style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
                 />
                 {label}
               </label>
@@ -897,19 +899,19 @@ export default function ProductForm({ initial, productId }) {
             className="flex items-center gap-1 text-sm font-medium px-4 py-2 transition-colors"
             style={{
               background: PAPER,
-              color: PURPLE,
-              border: `1px solid ${PURPLE}`,
+              color: PRIMARY,
+              border: `1px solid ${PRIMARY}`,
               borderRadius: '4px',
               fontFamily: 'sans-serif',
               cursor: 'pointer',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = PURPLE;
+              e.currentTarget.style.background = PRIMARY;
               e.currentTarget.style.color = PAPER;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = PAPER;
-              e.currentTarget.style.color = PURPLE;
+              e.currentTarget.style.color = PRIMARY;
             }}
           >
             <Plus size={16} /> Add Variant
@@ -946,7 +948,7 @@ export default function ProductForm({ initial, productId }) {
                 style={inputStyle}
                 value={v.color}
                 onChange={(e) => updateVariant(vIdx, 'color', e.target.value)}
-                onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                 onBlur={(e) => (e.target.style.borderColor = LINE)}
               />
               <input
@@ -961,7 +963,7 @@ export default function ProductForm({ initial, productId }) {
                 style={inputStyle}
                 value={v.price}
                 onChange={(e) => updateVariant(vIdx, 'price', e.target.value)}
-                onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                 onBlur={(e) => (e.target.style.borderColor = LINE)}
               />
               <input
@@ -970,7 +972,7 @@ export default function ProductForm({ initial, productId }) {
                 style={inputStyle}
                 value={v.compareAtPrice}
                 onChange={(e) => updateVariant(vIdx, 'compareAtPrice', e.target.value)}
-                onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                 onBlur={(e) => (e.target.style.borderColor = LINE)}
               />
             </div>
@@ -990,7 +992,7 @@ export default function ProductForm({ initial, productId }) {
             <button
               type="button"
               onClick={() => addVariantImage(vIdx)}
-              style={{ fontSize: '12px', color: PURPLE, fontFamily: 'sans-serif', fontWeight: '500', marginBottom: '12px', cursor: 'pointer' }}
+              style={{ fontSize: '12px', color: PRIMARY, fontFamily: 'sans-serif', fontWeight: '500', marginBottom: '12px', cursor: 'pointer' }}
             >
               + Add another image
             </button>
@@ -1016,7 +1018,7 @@ export default function ProductForm({ initial, productId }) {
                         name={`stockMode-${vIdx}`}
                         checked={(v.stockMode || 'size') === val}
                         onChange={() => updateVariant(vIdx, 'stockMode', val)}
-                        style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+                        style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
                       />
                       {text}
                     </label>
@@ -1036,7 +1038,7 @@ export default function ProductForm({ initial, productId }) {
                       style={{ ...inputStyle, maxWidth: '260px' }}
                       value={v.commonStock ?? ''}
                       onChange={(e) => updateVariant(vIdx, 'commonStock', e.target.value)}
-                      onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                      onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                       onBlur={(e) => (e.target.style.borderColor = LINE)}
                     />
                     <p style={{ fontSize: '11px', color: INK_SOFT, fontFamily: 'sans-serif', marginTop: '6px' }}>
@@ -1059,7 +1061,7 @@ export default function ProductForm({ initial, productId }) {
                       style={{ ...inputStyle, width: '140px', marginTop: 0 }}
                       value={s.size}
                       onChange={(e) => updateSize(vIdx, sIdx, 'size', e.target.value)}
-                      onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                      onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                       onBlur={(e) => (e.target.style.borderColor = LINE)}
                     />
                     {!isCommonMode && (
@@ -1069,7 +1071,7 @@ export default function ProductForm({ initial, productId }) {
                         style={{ ...inputStyle, width: '90px', marginTop: 0 }}
                         value={s.stock}
                         onChange={(e) => updateSize(vIdx, sIdx, 'stock', e.target.value)}
-                        onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                        onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                         onBlur={(e) => (e.target.style.borderColor = LINE)}
                       />
                     )}
@@ -1080,7 +1082,7 @@ export default function ProductForm({ initial, productId }) {
                       style={{ ...inputStyle, width: '140px', marginTop: 0 }}
                       value={s.price ?? ''}
                       onChange={(e) => updateSize(vIdx, sIdx, 'price', e.target.value)}
-                      onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                      onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                       onBlur={(e) => (e.target.style.borderColor = LINE)}
                     />
                     <input
@@ -1088,7 +1090,7 @@ export default function ProductForm({ initial, productId }) {
                       style={{ ...inputStyle, flex: 1, minWidth: '120px', marginTop: 0 }}
                       value={s.sku}
                       onChange={(e) => updateSize(vIdx, sIdx, 'sku', e.target.value)}
-                      onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                      onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                       onBlur={(e) => (e.target.style.borderColor = LINE)}
                     />
                     <button
@@ -1104,7 +1106,7 @@ export default function ProductForm({ initial, productId }) {
                 <button
                   type="button"
                   onClick={() => addSize(vIdx)}
-                  style={{ fontSize: '12px', color: PURPLE, fontFamily: 'sans-serif', fontWeight: '500', cursor: 'pointer' }}
+                  style={{ fontSize: '12px', color: PRIMARY, fontFamily: 'sans-serif', fontWeight: '500', cursor: 'pointer' }}
                 >
                   + Add size
                 </button>
@@ -1126,7 +1128,7 @@ export default function ProductForm({ initial, productId }) {
                     style={{ ...inputStyle, width: '110px', marginTop: 0 }}
                     value={v.sizes?.[0]?.stock ?? 0}
                     onChange={(e) => updateSize(vIdx, 0, 'stock', e.target.value)}
-                    onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                    onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                     onBlur={(e) => (e.target.style.borderColor = LINE)}
                   />
                   <input
@@ -1136,7 +1138,7 @@ export default function ProductForm({ initial, productId }) {
                     style={{ ...inputStyle, width: '150px', marginTop: 0 }}
                     value={v.sizes?.[0]?.price ?? ''}
                     onChange={(e) => updateSize(vIdx, 0, 'price', e.target.value)}
-                    onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                    onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                     onBlur={(e) => (e.target.style.borderColor = LINE)}
                   />
                   <input
@@ -1144,7 +1146,7 @@ export default function ProductForm({ initial, productId }) {
                     style={{ ...inputStyle, flex: 1, minWidth: '120px', marginTop: 0 }}
                     value={v.sizes?.[0]?.sku ?? ''}
                     onChange={(e) => updateSize(vIdx, 0, 'sku', e.target.value)}
-                    onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                    onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                     onBlur={(e) => (e.target.style.borderColor = LINE)}
                   />
                 </div>
@@ -1169,7 +1171,7 @@ export default function ProductForm({ initial, productId }) {
               type="checkbox"
               checked={!!form.discount?.isActive}
               onChange={(e) => updateDiscount('isActive', e.target.checked)}
-              style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+              style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
             />
             Show in Discounts section
           </label>
@@ -1188,7 +1190,7 @@ export default function ProductForm({ initial, productId }) {
                   style={inputStyle}
                   value={form.discount.type}
                   onChange={(e) => updateDiscount('type', e.target.value)}
-                  onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                   onBlur={(e) => (e.target.style.borderColor = LINE)}
                 >
                   <option value="percent">Percent (% off)</option>
@@ -1204,7 +1206,7 @@ export default function ProductForm({ initial, productId }) {
                   style={inputStyle}
                   value={form.discount.value}
                   onChange={(e) => updateDiscount('value', e.target.value)}
-                  onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                   onBlur={(e) => (e.target.style.borderColor = LINE)}
                 />
               </div>
@@ -1215,7 +1217,7 @@ export default function ProductForm({ initial, productId }) {
                   style={inputStyle}
                   value={form.discount.startsAt}
                   onChange={(e) => updateDiscount('startsAt', e.target.value)}
-                  onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                   onBlur={(e) => (e.target.style.borderColor = LINE)}
                 />
               </div>
@@ -1226,7 +1228,7 @@ export default function ProductForm({ initial, productId }) {
                   style={inputStyle}
                   value={form.discount.endsAt}
                   onChange={(e) => updateDiscount('endsAt', e.target.value)}
-                  onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
                   onBlur={(e) => (e.target.style.borderColor = LINE)}
                 />
               </div>
@@ -1235,7 +1237,7 @@ export default function ProductForm({ initial, productId }) {
             {discountPreview != null && (
               <p style={{ fontSize: '13px', color: INK, fontFamily: 'sans-serif', marginTop: '12px' }}>
                 Lowest price: {formatINR(previewBasePrice)} →{' '}
-                <b style={{ color: PURPLE }}>{formatINR(discountPreview)}</b> in the Discounts section
+                <b style={{ color: HIGHLIGHT }}>{formatINR(discountPreview)}</b> in the Discounts section
               </p>
             )}
             <p style={{ fontSize: '11px', color: INK_SOFT, fontFamily: 'sans-serif', marginTop: '6px' }}>

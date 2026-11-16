@@ -5,13 +5,14 @@ import Settings from '@/models/Settings';
 import { formatINR } from '@/lib/utils';
 import PrintButton from '@/components/PrintButton';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const PEACH = '#F7B900';        // accent (gold) - used for the total's divider
-const LINE = '#D9B4E8';         // borders (lavender)
-const PAPER = '#FFF5E8';        // page background (ivory)
-const PURPLE = '#4B087A';       // royal purple (labels, discount, total)
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const PEACH = '#C58A08';        // accent (gold) - used for the total's divider
+const LINE = '#E8D5C4';         // borders (soft warm)
+const PAPER = '#FFF9F0';        // page background
+const PURPLE = '#8F1538';       // primary (labels, total) - name kept for consistency
+const SAVINGS = '#075447';      // discount line (highlight green)
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 export default async function InvoicePage({ params }) {
@@ -27,7 +28,7 @@ export default async function InvoicePage({ params }) {
     <div className="max-w-2xl mx-auto p-8 sm:p-10" style={{ background: PAPER, color: INK }}>
       <div className="flex justify-between items-start pb-5 mb-6" style={{ borderBottom: `1px solid ${LINE}` }}>
         <div>
-          <h1 className="text-[22px]" style={{ fontFamily: FONT_SERIF, color: INK }}>
+          <h1 className="text-[22px]" style={{ fontFamily: FONT_SERIF, color: PURPLE }}>
             {settings?.storeName || 'Purple Queen'}
           </h1>
           <p className="text-sm mt-1" style={{ color: INK_SOFT }}>{settings?.address || 'Tamil Nadu'}</p>
@@ -84,7 +85,7 @@ export default async function InvoicePage({ params }) {
             <span>Subtotal</span><span>{formatINR(order.subtotal)}</span>
           </div>
           {order.discount > 0 && (
-            <div className="flex justify-between" style={{ color: PURPLE }}>
+            <div className="flex justify-between" style={{ color: SAVINGS }}>
               <span>Discount {order.couponCode && `(${order.couponCode})`}</span>
               <span>-{formatINR(order.discount)}</span>
             </div>

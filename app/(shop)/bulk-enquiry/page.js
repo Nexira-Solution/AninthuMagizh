@@ -3,18 +3,21 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 
-const GOLD = '#F7B900';       // buttons and premium details
-const PURPLE = '#4B087A';     // royal purple (headings, focus)
-const INK = '#24052F';        // deep plum text
-const INK_SOFT = '#7A6685';   // muted plum-gray
-const LINE = '#D9B4E8';       // lavender borders
+const PRIMARY = '#8F1538';     // headings, focus, button underline
+const SECONDARY = '#C58A08';   // buttons and premium details
+const BG = '#FFF9F0';          // page background
+const ACCENT = '#E60062';      // validation errors
+const HIGHLIGHT = '#075447';   // checkbox / small highlights
+const INK = '#29211E';         // main text
+const INK_SOFT = '#8A7A70';    // muted text (placeholder-style)
+const LINE = '#E8D5C4';        // soft borders
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP || '919791368249';
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP || '916369116002';
 
 const FALLBACK_PRODUCTS = ['Kurtis', 'Nighties', 'Innerwear', 'Other'];
 
 const inputClass =
-  'w-full px-4 py-3 text-sm bg-transparent outline-none transition-colors focus:border-[#4B087A]';
+  'w-full px-4 py-3 text-sm bg-transparent outline-none transition-colors focus:border-[#8F1538]';
 
 const inputStyle = { color: INK, border: `1px solid ${LINE}` };
 
@@ -25,7 +28,7 @@ function Field({ error, children }) {
     <div>
       {children}
       {error && (
-        <p className="text-[11px] mt-1" style={{ color: '#B00020' }}>
+        <p className="text-[11px] mt-1" style={{ color: ACCENT }}>
           {error}
         </p>
       )}
@@ -101,139 +104,141 @@ export default function BulkEnquiryPage() {
   }
 
   return (
-    <main className="max-w-xl mx-auto px-4 py-10 sm:py-14">
-      <h1
-        className="text-2xl sm:text-3xl text-center tracking-[2px] uppercase mb-2"
-        style={{ color: PURPLE }}
-      >
-        Bulk Order Enquiry
-      </h1>
-      <div className="w-12 h-[2px] mx-auto mb-8" style={{ background: GOLD }} />
-      <p className="text-center text-sm mb-8" style={{ color: INK_SOFT }}>
-        Fill in your details and we&apos;ll get back to you on WhatsApp.
-      </p>
-
-      <form
-        onSubmit={onSubmit}
-        noValidate
-        className="space-y-4 p-5 sm:p-8"
-        style={{ border: `1px solid ${LINE}`, borderTop: `2px solid ${GOLD}` }}
-      >
-        <Field error={errors.name}>
-          <input
-            className={inputClass}
-            style={inputStyle}
-            placeholder="First Name*"
-            value={form.name}
-            onChange={(e) => update('name', e.target.value)}
-          />
-        </Field>
-
-        <Field error={errors.email}>
-          <input
-            type="email"
-            className={inputClass}
-            style={inputStyle}
-            placeholder="Email*"
-            value={form.email}
-            onChange={(e) => update('email', e.target.value)}
-          />
-        </Field>
-
-        <Field error={errors.address}>
-          <input
-            className={inputClass}
-            style={inputStyle}
-            placeholder="Full Address*"
-            value={form.address}
-            onChange={(e) => update('address', e.target.value)}
-          />
-        </Field>
-
-        <Field error={errors.pincode}>
-          <input
-            inputMode="numeric"
-            maxLength={6}
-            className={inputClass}
-            style={inputStyle}
-            placeholder="Pincode*"
-            value={form.pincode}
-            onChange={(e) => update('pincode', e.target.value.replace(/\D/g, ''))}
-          />
-        </Field>
-
-        <Field error={errors.phone}>
-          <input
-            type="tel"
-            inputMode="numeric"
-            maxLength={13}
-            className={inputClass}
-            style={inputStyle}
-            placeholder="Phone Number*"
-            value={form.phone}
-            onChange={(e) => update('phone', e.target.value.replace(/[^\d+\s]/g, ''))}
-          />
-        </Field>
-
-        <Field error={errors.product}>
-          <select
-            className={inputClass}
-            style={{ ...inputStyle, color: form.product ? INK : INK_SOFT }}
-            value={form.product}
-            onChange={(e) => update('product', e.target.value)}
-          >
-            <option value="">Product Type*</option>
-            {productTypes.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field error={errors.quantity}>
-          <input
-            type="number"
-            min="1"
-            inputMode="numeric"
-            className={inputClass}
-            style={inputStyle}
-            placeholder="Quantity Required*"
-            value={form.quantity}
-            onChange={(e) => update('quantity', e.target.value)}
-          />
-        </Field>
-
-        <textarea
-          rows={5}
-          className={inputClass}
-          style={inputStyle}
-          placeholder="Message"
-          value={form.message}
-          onChange={(e) => update('message', e.target.value)}
-        />
-
-        <Field error={errors.agree}>
-          <label className="flex items-start gap-2.5 text-[13px] cursor-pointer" style={{ color: INK }}>
-            <input
-              type="checkbox"
-              className="mt-0.5 w-4 h-4 accent-[#4B087A] shrink-0"
-              checked={form.agree}
-              onChange={(e) => update('agree', e.target.checked)}
-            />
-            <span>I agree to the Terms &amp; Conditions and Privacy Policy.*</span>
-          </label>
-        </Field>
-
-        <button
-          type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3.5 text-sm font-semibold tracking-[1.5px] uppercase transition-opacity hover:opacity-85"
-          style={{ background: GOLD, color: INK, borderBottom: `2px solid ${PURPLE}` }}
+    <div className="min-h-screen" style={{ background: BG }}>
+      <main className="max-w-xl mx-auto px-4 py-10 sm:py-14">
+        <h1
+          className="text-2xl sm:text-3xl text-center tracking-[2px] uppercase mb-2"
+          style={{ color: PRIMARY }}
         >
-          <MessageCircle size={16} strokeWidth={1.75} />
-          Submit
-        </button>
-      </form>
-    </main>
+          Bulk Order Enquiry
+        </h1>
+        <div className="w-12 h-[2px] mx-auto mb-8" style={{ background: SECONDARY }} />
+        <p className="text-center text-sm mb-8" style={{ color: INK_SOFT }}>
+          Fill in your details and we&apos;ll get back to you on WhatsApp.
+        </p>
+
+        <form
+          onSubmit={onSubmit}
+          noValidate
+          className="space-y-4 p-5 sm:p-8"
+          style={{ border: `1px solid ${LINE}`, borderTop: `2px solid ${SECONDARY}` }}
+        >
+          <Field error={errors.name}>
+            <input
+              className={inputClass}
+              style={inputStyle}
+              placeholder="First Name*"
+              value={form.name}
+              onChange={(e) => update('name', e.target.value)}
+            />
+          </Field>
+
+          <Field error={errors.email}>
+            <input
+              type="email"
+              className={inputClass}
+              style={inputStyle}
+              placeholder="Email*"
+              value={form.email}
+              onChange={(e) => update('email', e.target.value)}
+            />
+          </Field>
+
+          <Field error={errors.address}>
+            <input
+              className={inputClass}
+              style={inputStyle}
+              placeholder="Full Address*"
+              value={form.address}
+              onChange={(e) => update('address', e.target.value)}
+            />
+          </Field>
+
+          <Field error={errors.pincode}>
+            <input
+              inputMode="numeric"
+              maxLength={6}
+              className={inputClass}
+              style={inputStyle}
+              placeholder="Pincode*"
+              value={form.pincode}
+              onChange={(e) => update('pincode', e.target.value.replace(/\D/g, ''))}
+            />
+          </Field>
+
+          <Field error={errors.phone}>
+            <input
+              type="tel"
+              inputMode="numeric"
+              maxLength={13}
+              className={inputClass}
+              style={inputStyle}
+              placeholder="Phone Number*"
+              value={form.phone}
+              onChange={(e) => update('phone', e.target.value.replace(/[^\d+\s]/g, ''))}
+            />
+          </Field>
+
+          <Field error={errors.product}>
+            <select
+              className={inputClass}
+              style={{ ...inputStyle, color: form.product ? INK : INK_SOFT }}
+              value={form.product}
+              onChange={(e) => update('product', e.target.value)}
+            >
+              <option value="">Product Type*</option>
+              {productTypes.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field error={errors.quantity}>
+            <input
+              type="number"
+              min="1"
+              inputMode="numeric"
+              className={inputClass}
+              style={inputStyle}
+              placeholder="Quantity Required*"
+              value={form.quantity}
+              onChange={(e) => update('quantity', e.target.value)}
+            />
+          </Field>
+
+          <textarea
+            rows={5}
+            className={inputClass}
+            style={inputStyle}
+            placeholder="Message"
+            value={form.message}
+            onChange={(e) => update('message', e.target.value)}
+          />
+
+          <Field error={errors.agree}>
+            <label className="flex items-start gap-2.5 text-[13px] cursor-pointer" style={{ color: INK }}>
+              <input
+                type="checkbox"
+                className="mt-0.5 w-4 h-4 accent-[#075447] shrink-0"
+                checked={form.agree}
+                onChange={(e) => update('agree', e.target.checked)}
+              />
+              <span>I agree to the Terms &amp; Conditions and Privacy Policy.*</span>
+            </label>
+          </Field>
+
+          <button
+            type="submit"
+            className="w-full flex items-center justify-center gap-2 py-3.5 text-sm font-semibold tracking-[1.5px] uppercase transition-opacity hover:opacity-85"
+            style={{ background: SECONDARY, color: INK, borderBottom: `2px solid ${PRIMARY}` }}
+          >
+            <MessageCircle size={16} strokeWidth={1.75} />
+            Submit
+          </button>
+        </form>
+      </main>
+    </div>
   );
 }

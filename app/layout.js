@@ -22,11 +22,19 @@ const body = Poppins({
   display: 'swap',
 });
 
-const SITE_NAME = 'Purple Queen';
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.purplequeen.in').replace(/\/+$/, '');
-const DEFAULT_TITLE = 'Purple Queen | Women Kurtis, Nighties & Innerwear Online';
+const SITE_NAME = 'Aninthu Magizh';
+// TODO: replace the fallback with your real domain (or set NEXT_PUBLIC_SITE_URL in your env)
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.aninthumagizh.in').replace(/\/+$/, '');
+const DEFAULT_TITLE = 'Aninthu Magizh | Women Kurtis, Nighties & Innerwear Online';
 const DEFAULT_DESCRIPTION =
-  'Shop women’s kurtis, nighties, innerwear and trending ethnic wear online at Purple Queen. Quality fabrics, latest designs, easy returns and fast delivery across India.';
+  'Shop women’s kurtis, nighties, innerwear and trending ethnic wear online at Aninthu Magizh. Quality fabrics, latest designs, easy returns and fast delivery across India.';
+
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const BG = '#FFF9F0';
+const INK = '#29211E';
+const LINE = '#E8D5C4';
+const HIGHLIGHT = '#075447';
+const ACCENT = '#E60062';
 
 // Cached for 1 hour. Call revalidateTag('settings') after saving settings in admin.
 const getSeoSettings = unstable_cache(
@@ -70,7 +78,7 @@ export async function generateMetadata() {
       'night dress for women',
       'innerwear online',
       'ethnic wear for women',
-      'Purple Queen',
+      'Aninthu Magizh',
       'women fashion India',
     ],
     // NOTE: do NOT set `alternates.canonical` here. A layout-level canonical
@@ -114,7 +122,7 @@ export async function generateMetadata() {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#ffffff',
+  themeColor: BG,
 };
 
 // Site-wide structured data: Organization + WebSite (enables sitelinks / brand knowledge panel)
@@ -149,7 +157,7 @@ const jsonLd = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en-IN">
-      {/* background comes from globals.css (white) */}
+      {/* background comes from globals.css (cream) */}
       <body className={`${display.variable} ${body.variable} font-body antialiased`}>
         <script
           type="application/ld+json"
@@ -173,18 +181,18 @@ export default function RootLayout({ children }) {
           toastOptions={{
             style: {
               fontFamily: 'var(--font-body)',
-              background: '#fff',
-              color: '#241B21',
-              border: '1px solid #EEE3DA',
+              background: BG,
+              color: INK,
+              border: `1px solid ${LINE}`,
               borderRadius: '6px',
               fontSize: '13px',
               fontWeight: '500',
             },
             success: {
-              iconTheme: { primary: '#D9946A', secondary: '#fff' },
+              iconTheme: { primary: HIGHLIGHT, secondary: BG },
             },
             error: {
-              iconTheme: { primary: '#C17F55', secondary: '#fff' },
+              iconTheme: { primary: ACCENT, secondary: BG },
             },
           }}
         />

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 export default function WhatsAppButton({
-  phone = '919791368249',
+  phone = '916369116002',
   message = "Hi! I'd like to know more about your products.",
 }) {
   const [hovered, setHovered] = useState(false);

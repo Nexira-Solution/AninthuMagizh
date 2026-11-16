@@ -6,12 +6,14 @@ import { Heart } from 'lucide-react';
 import { useWishlist } from '@/components/WhishlistContext';
 import ProductCard from '@/components/ProductCard';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const PEACH = '#F7B900';        // accent (gold) - empty-state icon, primary button
-const PEACH_WASH = '#F3E6F8';   // light lavender tint (loading placeholders)
-const PAPER = '#FFF5E8';        // page background (ivory)
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const PEACH = '#C58A08';        // accent (gold) - primary button, divider
+const PEACH_WASH = '#F6EADB';   // light warm tint (loading placeholders)
+const PAPER = '#FFF9F0';        // page background
+const PURPLE = '#8F1538';       // primary (name kept for consistency with other files)
+const ACCENT = '#E60062';       // wishlist heart
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 export default function WishlistPage() {
@@ -53,47 +55,50 @@ export default function WishlistPage() {
   }, [wishlist]);
 
   return (
-    <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-16 min-h-[60vh]" style={{ background: PAPER }}>
-      <div className="mb-10">
-        <h1 className="text-[24px] sm:text-[28px]" style={{ fontFamily: FONT_SERIF, color: INK }}>
-          My Wishlist
-        </h1>
-        <p className="text-sm mt-1.5" style={{ color: INK_SOFT }}>
-          {products.length > 0
-            ? `${products.length} item${products.length > 1 ? 's' : ''} saved`
-            : 'Items you save will show up here'}
-        </p>
+    <div className="min-h-screen" style={{ background: PAPER }}>
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-16 min-h-[60vh]">
+        <div className="mb-10">
+          <h1 className="text-[24px] sm:text-[28px]" style={{ fontFamily: FONT_SERIF, color: PURPLE }}>
+            My Wishlist
+          </h1>
+          <div className="w-12 h-[2px] mt-3" style={{ background: PEACH }} />
+          <p className="text-sm mt-3" style={{ color: INK_SOFT }}>
+            {products.length > 0
+              ? `${products.length} item${products.length > 1 ? 's' : ''} saved`
+              : 'Items you save will show up here'}
+          </p>
+        </div>
+
+        {loading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-[3/4]" style={{ background: PEACH_WASH, borderRadius: '4px' }} />
+            ))}
+          </div>
+        )}
+
+        {!loading && products.length === 0 && (
+          <div className="text-center py-20">
+            <Heart size={28} strokeWidth={1.5} className="mx-auto mb-3" style={{ color: ACCENT, opacity: 0.6 }} />
+            <p className="text-sm mb-5" style={{ color: INK_SOFT }}>Your wishlist is empty</p>
+            <Link
+              href="/"
+              className="inline-block px-6 py-3 text-sm font-semibold transition-opacity active:opacity-80"
+              style={{ background: PEACH, color: INK, borderRadius: '4px' }}
+            >
+              Start Shopping
+            </Link>
+          </div>
+        )}
+
+        {!loading && products.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+            {products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4]" style={{ background: PEACH_WASH, borderRadius: '4px' }} />
-          ))}
-        </div>
-      )}
-
-      {!loading && products.length === 0 && (
-        <div className="text-center py-20">
-          <Heart size={28} strokeWidth={1.5} className="mx-auto mb-3" style={{ color: PEACH, opacity: 0.6 }} />
-          <p className="text-sm mb-5" style={{ color: INK_SOFT }}>Your wishlist is empty</p>
-          <Link
-            href="/"
-            className="inline-block px-6 py-3 text-sm font-semibold transition-opacity active:opacity-80"
-            style={{ background: PEACH, color: INK, borderRadius: '4px' }}
-          >
-            Start Shopping
-          </Link>
-        </div>
-      )}
-
-      {!loading && products.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

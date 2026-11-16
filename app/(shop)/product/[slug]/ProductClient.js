@@ -23,17 +23,19 @@ const SizeChartModal = dynamic(() => import('@/components/SizeChartModal'), { ss
 const Lightbox = dynamic(() => import('@/components/Lightbox'), { ssr: false });
 const ImageZoomModal = dynamic(() => import('@/components/ImageZoomModal'), { ssr: false });
 
-// Design tokens: purple / gold / ivory system.
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const PEACH = '#F7B900';        // accent (gold) - stars, dots, rings, icons, buttons
-const PEACH_WASH = '#F3E6F8';   // light lavender tint (image placeholder, badges)
-const LINE = '#D9B4E8';         // borders (lavender)
-const PAPER = '#FFF5E8';        // page background (ivory)
-const NEUTRAL = '#A894B3';      // strike-through prices, quiet text
-const PURPLE = '#4B087A';       // royal purple (labels, discount, outline buttons)
-const GOLD_DARK = '#8A6500';    // darker gold for readable warning text
+// Design tokens: crimson / gold / cream system.
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const PEACH = '#C58A08';        // accent (gold) - stars, dots, rings, buttons
+const PEACH_WASH = '#F6EADB';   // light warm tint (image placeholder, badges)
+const LINE = '#E8D5C4';         // borders (soft warm)
+const PAPER = '#FFF9F0';        // page background
+const NEUTRAL = '#B3A397';      // strike-through prices, quiet text
+const PURPLE = '#8F1538';       // primary (name kept for consistency with other files)
+const SAVINGS = '#075447';      // discounts / offer labels (highlight green)
+const ACCENT = '#E60062';       // wishlist heart
+const GOLD_DARK = '#8A6100';    // darker gold for readable warning text
 
 // Gallery auto-advance. Off by default: with autoplay every visitor downloads
 // every product image one after another (more data, more image transformations)
@@ -337,7 +339,7 @@ export default function ProductClient({ data }) {
               {images[activeImage] && (
                 <div
                   className="absolute bottom-3 left-3 z-10 w-8 h-8 flex items-center justify-center rounded-full pointer-events-none"
-                  style={{ background: 'rgba(255,245,232,0.92)' }}
+                  style={{ background: 'rgba(255,249,240,0.92)' }}
                 >
                   <ZoomIn size={15} strokeWidth={1.8} style={{ color: INK }} />
                 </div>
@@ -350,15 +352,15 @@ export default function ProductClient({ data }) {
                   aria-label={wished ? 'Remove from wishlist' : 'Save to wishlist'}
                   aria-pressed={wished}
                   className="w-9 h-9 flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ background: 'rgba(255,245,232,0.92)' }}
+                  style={{ background: 'rgba(255,249,240,0.92)' }}
                 >
-                  <Heart size={17} strokeWidth={1.6} style={{ color: wished ? PEACH : INK }} fill={wished ? PEACH : 'none'} />
+                  <Heart size={17} strokeWidth={1.6} style={{ color: wished ? ACCENT : INK }} fill={wished ? ACCENT : 'none'} />
                 </button>
                 <button
                   onClick={handleShare}
                   aria-label="Share"
                   className="w-9 h-9 flex items-center justify-center rounded-full active:scale-90 transition-transform"
-                  style={{ background: 'rgba(255,245,232,0.92)' }}
+                  style={{ background: 'rgba(255,249,240,0.92)' }}
                 >
                   <Share2 size={16} strokeWidth={1.6} style={{ color: INK }} />
                 </button>
@@ -366,27 +368,27 @@ export default function ProductClient({ data }) {
 
               {images.length > 1 && (
                 <>
-                  {/* Prev / next: always visible round buttons, turn purple on hover/press */}
+                  {/* Prev / next: always visible round buttons, turn crimson on hover/press */}
                   <button
                     onClick={prevImage}
                     className="group absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md transition active:scale-90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ background: 'rgba(255,245,232,0.95)', outlineColor: PEACH }}
+                    style={{ background: 'rgba(255,249,240,0.95)', outlineColor: PEACH }}
                     aria-label="Previous image"
                   >
-                    <ChevronLeft size={20} strokeWidth={2} className="transition-colors group-hover:text-[#4B087A] group-active:text-[#4B087A]" style={{ color: INK }} />
+                    <ChevronLeft size={20} strokeWidth={2} className="transition-colors group-hover:text-[#8F1538] group-active:text-[#8F1538]" style={{ color: INK }} />
                   </button>
                   <button
                     onClick={nextImage}
                     className="group absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md transition active:scale-90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ background: 'rgba(255,245,232,0.95)', outlineColor: PEACH }}
+                    style={{ background: 'rgba(255,249,240,0.95)', outlineColor: PEACH }}
                     aria-label="Next image"
                   >
-                    <ChevronRight size={20} strokeWidth={2} className="transition-colors group-hover:text-[#4B087A] group-active:text-[#4B087A]" style={{ color: INK }} />
+                    <ChevronRight size={20} strokeWidth={2} className="transition-colors group-hover:text-[#8F1538] group-active:text-[#8F1538]" style={{ color: INK }} />
                   </button>
 
                   <div
                     className="hidden sm:block absolute bottom-3 right-3 px-2 py-0.5 rounded-full text-[11px] font-medium tracking-wide"
-                    style={{ color: INK, background: 'rgba(255,245,232,0.85)' }}
+                    style={{ color: INK, background: 'rgba(255,249,240,0.85)' }}
                   >
                     {String(activeImage + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
                   </div>
@@ -406,8 +408,8 @@ export default function ProductClient({ data }) {
                           style={{
                             width: i === activeImage ? 20 : 7,
                             height: 7,
-                            background: i === activeImage ? PEACH : 'rgba(255,245,232,0.85)',
-                            boxShadow: '0 0 0 1px rgba(36,5,47,0.15)',
+                            background: i === activeImage ? PEACH : 'rgba(255,249,240,0.85)',
+                            boxShadow: '0 0 0 1px rgba(41,33,30,0.15)',
                             transition: 'width .25s, background .25s',
                           }}
                         />
@@ -451,7 +453,7 @@ export default function ProductClient({ data }) {
 
             <h1
               className={`${display.className} text-[20px] sm:text-[32px] leading-[1.15]`}
-              style={{ color: INK, fontWeight: 400, letterSpacing: '-0.01em' }}
+              style={{ color: PURPLE, fontWeight: 400, letterSpacing: '-0.01em' }}
             >
               {product.name}
             </h1>
@@ -472,7 +474,7 @@ export default function ProductClient({ data }) {
             </div>
 
             <div className="flex items-baseline gap-3 mt-3 sm:mt-6">
-              <span className={`${display.className} text-[22px] sm:text-[26px]`} style={{ color: INK, fontWeight: 500 }}>
+              <span className={`${display.className} text-[22px] sm:text-[26px]`} style={{ color: PURPLE, fontWeight: 500 }}>
                 {showFrom && <span className="text-xs font-normal mr-1.5" style={{ color: INK_SOFT }}>From</span>}
                 {formatINR(unitPrice)}
               </span>
@@ -482,13 +484,13 @@ export default function ProductClient({ data }) {
                 </span>
               )}
               {discount > 0 && (
-                <span className="text-xs font-medium" style={{ color: PURPLE }}>
+                <span className="text-xs font-medium" style={{ color: SAVINGS }}>
                   {discount}% off
                 </span>
               )}
             </div>
             {useDiscount && (
-              <p className="text-xs mt-1 font-medium" style={{ color: PURPLE }}>
+              <p className="text-xs mt-1 font-medium" style={{ color: SAVINGS }}>
                 Discount offer price
               </p>
             )}
@@ -586,7 +588,7 @@ export default function ProductClient({ data }) {
 
             {product.description && (
               <div className="mt-6 pt-6 sm:mt-8 sm:pt-8 text-sm leading-relaxed" style={{ color: INK_SOFT, borderTop: `1px solid ${LINE}` }}>
-                <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-3" style={{ color: INK }}>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-3" style={{ color: PURPLE }}>
                   Description
                 </h3>
                 <p className="whitespace-pre-wrap break-words">{product.description}</p>
@@ -600,7 +602,7 @@ export default function ProductClient({ data }) {
         {/* Reviews: content-visibility skips rendering work until scrolled near */}
         {reviews?.length > 0 && (
           <div className="mt-20 sm:mt-28" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }}>
-            <h2 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-8" style={{ color: INK }}>
+            <h2 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-8" style={{ color: PURPLE }}>
               Customer Reviews
             </h2>
             <div className="grid sm:grid-cols-2 gap-x-12 gap-y-8">
@@ -643,7 +645,7 @@ export default function ProductClient({ data }) {
         {/* Related */}
         {related?.length > 0 && (
           <div className="mt-20 sm:mt-28" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 500px' }}>
-            <h2 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-8" style={{ color: INK }}>
+            <h2 className="text-[11px] font-medium uppercase tracking-[0.18em] mb-8" style={{ color: PURPLE }}>
               You may also like
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-10">
@@ -660,7 +662,7 @@ export default function ProductClient({ data }) {
           style={{ background: PAPER, borderTop: `1px solid ${LINE}`, zIndex: 9999 }}
         >
           <div className="shrink-0">
-            <p className="text-base font-medium leading-none" style={{ color: INK }}>
+            <p className="text-base font-medium leading-none" style={{ color: PURPLE }}>
               {showFrom && <span className="text-[11px] font-normal mr-1" style={{ color: INK_SOFT }}>From</span>}
               {formatINR(unitPrice)}
             </p>

@@ -16,28 +16,41 @@ module.exports = {
         },
       },
       colors: {
-        // Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+        // Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
         brand: {
           // New names (use these going forward)
-          purple: '#4B087A',       // primary brand color (headings, prices, links)
-          purpledark: '#36055A',   // darker purple, for hovers (derived)
-          gold: '#F7B900',         // buttons and premium details
-          golddark: '#D9A000',     // darker gold, for button hovers (derived)
-          ivory: '#FFF5E8',        // page background
-          lavender: '#D9B4E8',     // borders, soft fills
-          ink: '#24052F',          // text, dark sections
+          primary: '#8F1538',        // headings, prices, links, focus
+          primarydark: '#6E0F2B',    // darker primary, for hovers (derived)
+          secondary: '#C58A08',      // buttons and premium details
+          secondarydark: '#A87306',  // darker secondary, for button hovers (derived)
+          secondarytext: '#8A6100',  // text-safe gold for use on cream (derived)
+          bg: '#FFF9F0',             // page background
+          accent: '#E60062',         // errors, destructive actions
+          highlight: '#075447',      // badges, success, small highlights
+          ink: '#29211E',            // main text, dark sections
+          inksoft: '#8A7A70',        // muted text (derived)
+          line: '#E8D5C4',           // borders, dividers (derived)
+          wash: '#F6EADB',           // soft fills (derived)
+
+          // Previous names: kept so existing classes like bg-brand-purple or
+          // text-brand-gold keep working. They now resolve to the new palette.
+          purple: '#8F1538',         // -> primary
+          purpledark: '#6E0F2B',     // -> primarydark
+          gold: '#C58A08',           // -> secondary
+          golddark: '#A87306',       // -> secondarydark
+          ivory: '#FFF9F0',          // -> bg
+          lavender: '#E8D5C4',       // -> line
 
           // Legacy names: kept so existing classes like bg-brand-magenta keep working.
-          // They now resolve to the new palette.
-          teal: '#4B087A',         // was teal primary -> purple
-          tealdark: '#36055A',     // was dark teal hover -> dark purple
-          cream: '#FFF5E8',        // was cream background -> ivory
-          sand: '#D9B4E8',         // was sand borders -> lavender
-          magenta: '#4B087A',      // primary -> purple
-          rose: '#6B1FA0',         // lighter purple hover (derived)
-          pink: '#F7B900',         // accent -> gold
-          green: '#8E4FB8',        // mid purple highlight (derived)
-          deepgreen: '#4B087A'     // -> purple
+          teal: '#8F1538',           // -> primary
+          tealdark: '#6E0F2B',       // -> primarydark
+          cream: '#FFF9F0',          // -> bg
+          sand: '#E8D5C4',           // -> line
+          magenta: '#8F1538',        // -> primary
+          rose: '#B0204A',           // lighter primary hover (derived)
+          pink: '#C58A08',           // accent -> secondary (gold)
+          green: '#075447',          // -> highlight
+          deepgreen: '#075447'       // -> highlight
         }
       },
       fontFamily: {
@@ -45,7 +58,7 @@ module.exports = {
         body: ['var(--font-body)']
       },
       boxShadow: {
-        soft: '0 8px 30px -8px rgba(75,8,122,0.18)'
+        soft: '0 8px 30px -8px rgba(143,21,56,0.18)'
       },
       borderRadius: {
         xl2: '1.25rem'

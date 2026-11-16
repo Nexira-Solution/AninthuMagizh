@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Design tokens: shared with Navbar / CouponMarquee for a consistent system
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const PURPLE = '#4B087A';   // royal purple, primary brand
-const GOLD = '#F7B900';     // buttons and premium details
-const HAIRLINE = '#D9B4E8'; // soft lavender borders
-const PAPER = '#FFF5E8';    // ivory background
-const INK = '#24052F';      // deep purple for icons and text
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';  // crimson, primary brand
+const GOLD = '#C58A08';     // secondary: arrow buttons and active indicator
+const HAIRLINE = '#E5CDD3'; // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';    // background
+const INK = '#29211E';      // icons and text
 
 export default function BannerCarousel({ banners }) {
   const [index, setIndex] = useState(0);
@@ -80,11 +80,11 @@ export default function BannerCarousel({ banners }) {
 
         {count > 1 && (
           <>
-            {/* Arrows: gold buttons with deep purple icons */}
+            {/* Arrows: gold buttons with dark icons and a crimson outline */}
             <button
               onClick={() => setIndex((i) => (i - 1 + count) % count)}
               className="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-full transition z-10 hover:brightness-95"
-              style={{ background: GOLD, color: INK, border: `1px solid ${PURPLE}` }}
+              style={{ background: GOLD, color: INK, border: `1px solid ${PRIMARY}` }}
               aria-label="Previous"
             >
               <ChevronLeft size={15} strokeWidth={1.75} />
@@ -92,7 +92,7 @@ export default function BannerCarousel({ banners }) {
             <button
               onClick={() => setIndex((i) => (i + 1) % count)}
               className="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-full transition z-10 hover:brightness-95"
-              style={{ background: GOLD, color: INK, border: `1px solid ${PURPLE}` }}
+              style={{ background: GOLD, color: INK, border: `1px solid ${PRIMARY}` }}
               aria-label="Next"
             >
               <ChevronRight size={15} strokeWidth={1.75} />
@@ -108,8 +108,8 @@ export default function BannerCarousel({ banners }) {
                   style={{
                     height: '3px',
                     width: i === index ? '22px' : '10px',
-                    background: i === index ? GOLD : 'rgba(255,245,232,0.75)',
-                    boxShadow: i === index ? `0 0 0 1px ${PURPLE}66` : '0 0 0 1px rgba(36,5,47,0.2)',
+                    background: i === index ? GOLD : 'rgba(255,249,240,0.75)',
+                    boxShadow: i === index ? `0 0 0 1px ${PRIMARY}66` : '0 0 0 1px rgba(41,33,30,0.2)',
                   }}
                   aria-label={`Go to slide ${i + 1}`}
                 />

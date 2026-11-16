@@ -5,15 +5,15 @@ import toast from 'react-hot-toast';
 import { totalPiecesOf } from '@/lib/comboPieces';
 
 const CartContext = createContext(null);
-const STORAGE_KEY = 'lb_cart_v1';
+const STORAGE_KEY = 'am_cart_v1';
 
-// ── Brand tokens: royal purple / gold / ivory theme ────────
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const PURPLE   = '#4B087A'; // royal purple, primary brand
-const GOLD     = '#F7B900'; // premium details
-const HAIRLINE = '#D9B4E8'; // soft lavender borders
-const PAPER    = '#FFF5E8'; // ivory background
-const INK      = '#24052F'; // deep purple for text
+// ── Brand tokens: crimson / gold / cream theme ─────────────
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY  = '#8F1538'; // crimson, primary brand
+const GOLD     = '#C58A08'; // secondary: toast accent bar
+const HAIRLINE = '#E5CDD3'; // soft borders (derived tint of primary)
+const PAPER    = '#FFF9F0'; // background
+const INK      = '#29211E'; // text
 const RUST     = '#B0503A'; // kept as-is: out-of-stock / error needs to read as a warning
 
 const toastBase = {
@@ -26,7 +26,7 @@ const toastBase = {
     background: PAPER,
     borderRadius: '4px',
     padding: '10px 14px',
-    boxShadow: '0 2px 12px rgba(36,5,47,0.12)',
+    boxShadow: '0 2px 12px rgba(41,33,30,0.12)',
     borderLeft: `3px solid ${GOLD}`,
   },
 };
@@ -36,8 +36,8 @@ function brandToast(message, opts = {}) {
     () => (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <span>{message}</span>
-        <span style={{ fontSize: 9, color: PURPLE, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
-          Purple Queen
+        <span style={{ fontSize: 9, color: PRIMARY, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+          Aninthu Magizh
         </span>
       </div>
     ),
@@ -249,7 +249,7 @@ export function CartProvider({ children }) {
     commit([]);
     brandToast('Cart cleared', {
       icon: '✕',
-      style: { ...toastBase.style, borderLeftColor: PURPLE },
+      style: { ...toastBase.style, borderLeftColor: PRIMARY },
     });
   }, [commit]);
 

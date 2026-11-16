@@ -4,21 +4,23 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const PAPER = '#FFF5E8';
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PAPER = '#FFF9F0';                     // cream: close icon
+const OVERLAY = 'rgba(41,33,30,0.88)';       // dark brown (from the text color) backdrop
+const CONTROL_BG = 'rgba(255,249,240,0.15)'; // translucent cream control fill
 
 export default function Lightbox({ src, onClose }) {
   return createPortal(
     <div
       onClick={onClose}
       className="fixed inset-0 flex items-center justify-center p-6"
-      style={{ background: 'rgba(36,5,47,0.88)', zIndex: 10000 }}
+      style={{ background: OVERLAY, zIndex: 10000 }}
     >
       <div className="relative w-full max-w-md aspect-square" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute -top-11 right-0 sm:-top-2 sm:-right-11 w-9 h-9 flex items-center justify-center rounded-full"
-          style={{ background: 'rgba(255,245,232,0.15)', color: PAPER }}
+          style={{ background: CONTROL_BG, color: PAPER }}
           aria-label="Close"
         >
           <X size={20} />

@@ -8,15 +8,16 @@ import ComboImageGallery from './ComboImageGallery';
 import { ShoppingBag, Zap, Ruler, Minus, Plus, PackageCheck, AlertCircle, ChevronDown } from 'lucide-react';
 import { piecesPerUnit } from '@/lib/comboPieces';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
 // Keep in sync with the rest of the storefront.
-const INK = '#24052F';       // deep purple for text
-const INK_SOFT = '#6E5A7C';  // muted purple-grey for secondary text
-const PURPLE = '#4B087A';    // royal purple: prices, active states, outlines
-const GOLD = '#F7B900';      // buttons and premium details
-const WASH = '#F6EAF9';      // light lavender tint for selected / soft fills
-const LINE = '#D9B4E8';      // soft lavender borders
-const PAPER = '#FFF5E8';     // ivory background
+const INK = '#29211E';       // text
+const INK_SOFT = '#7A6A63';  // muted secondary text (derived from text)
+const PRIMARY = '#8F1538';   // crimson: prices, active states, outlines
+const GOLD = '#C58A08';      // secondary: Buy now button, discount badge
+const SAVINGS = '#075447';   // highlight: savings and discount text
+const WASH = '#F6ECE0';      // light cream tint for selected / soft fills (derived)
+const LINE = '#E5CDD3';      // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';     // background
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const GENERIC_SIZE_CHART = [
@@ -234,13 +235,13 @@ export default function ColorPackSelector({ combo }) {
           {pack ? (
             <>
               <div className="flex items-baseline gap-3">
-                <span className="text-[26px] font-semibold" style={{ color: PURPLE }}>{formatINR(pack.price || 0)}</span>
+                <span className="text-[26px] font-semibold" style={{ color: PRIMARY }}>{formatINR(pack.price || 0)}</span>
                 {pack.originalPrice > pack.price && (
                   <span className="line-through text-base" style={{ color: INK_SOFT, opacity: 0.8 }}>{formatINR(pack.originalPrice)}</span>
                 )}
               </div>
               {savings > 0 && (
-                <p className="text-sm mt-1.5" style={{ color: PURPLE }}>
+                <p className="text-sm mt-1.5" style={{ color: SAVINGS }}>
                   You save {formatINR(savings)} ({savingsPct}% off)
                 </p>
               )}
@@ -267,16 +268,16 @@ export default function ColorPackSelector({ combo }) {
                     className="p-3 text-left transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     style={{
                       borderRadius: '2px',
-                      border: `1px solid ${active ? PURPLE : LINE}`,
+                      border: `1px solid ${active ? PRIMARY : LINE}`,
                       background: active ? WASH : PAPER,
                     }}
                   >
                     <p className="text-sm" style={{ color: INK }}>Pack of {p.size}</p>
-                    <p className="font-semibold text-sm mt-0.5" style={{ color: PURPLE }}>{formatINR(p.price)}</p>
+                    <p className="font-semibold text-sm mt-0.5" style={{ color: PRIMARY }}>{formatINR(p.price)}</p>
                     {outOfStock ? (
                       <p className="text-[11px] mt-0.5" style={{ color: INK_SOFT }}>Out of stock</p>
                     ) : (
-                      pctOff > 0 && <p className="text-[11px] mt-0.5" style={{ color: PURPLE }}>{pctOff}% off</p>
+                      pctOff > 0 && <p className="text-[11px] mt-0.5" style={{ color: SAVINGS }}>{pctOff}% off</p>
                     )}
                   </button>
                 );
@@ -295,11 +296,11 @@ export default function ColorPackSelector({ combo }) {
             </h3>
             {packSize > 0 && (
               remaining > 0 ? (
-                <span className="text-xs flex items-center gap-1" style={{ color: PURPLE }}>
+                <span className="text-xs flex items-center gap-1" style={{ color: PRIMARY }}>
                   <AlertCircle size={12} strokeWidth={2} /> {remaining} more
                 </span>
               ) : (
-                <span className="text-xs flex items-center gap-1" style={{ color: PURPLE }}>
+                <span className="text-xs flex items-center gap-1" style={{ color: SAVINGS }}>
                   <PackageCheck size={12} strokeWidth={2} /> Complete
                 </span>
               )
@@ -313,7 +314,7 @@ export default function ColorPackSelector({ combo }) {
           <button
             onClick={() => setShowSizeChart((v) => !v)}
             className="flex items-center gap-1 text-xs mb-3"
-            style={{ color: PURPLE }}
+            style={{ color: PRIMARY }}
           >
             <Ruler size={13} strokeWidth={1.75} /> Size chart
             <ChevronDown
@@ -366,7 +367,7 @@ export default function ColorPackSelector({ combo }) {
                     className="p-3 transition-colors"
                     style={{
                       borderRadius: '2px',
-                      border: `1px solid ${isActive ? PURPLE : LINE}`,
+                      border: `1px solid ${isActive ? PRIMARY : LINE}`,
                       opacity: colorSoldOut ? 0.45 : 1,
                     }}
                   >
@@ -375,12 +376,12 @@ export default function ColorPackSelector({ combo }) {
                         className="w-6 h-6 rounded-full shrink-0"
                         style={{
                           backgroundColor: c.hex || '#ddd',
-                          boxShadow: isActive ? `0 0 0 2px ${PAPER}, 0 0 0 3.5px ${PURPLE}` : `0 0 0 1px ${LINE}`,
+                          boxShadow: isActive ? `0 0 0 2px ${PAPER}, 0 0 0 3.5px ${PRIMARY}` : `0 0 0 1px ${LINE}`,
                         }}
                         title={c.name}
                       />
                       <p className="text-sm flex-1 truncate" style={{ color: INK }}>{c.name}</p>
-                      <span className="text-[11px]" style={{ color: total > 0 ? PURPLE : INK_SOFT }}>
+                      <span className="text-[11px]" style={{ color: total > 0 ? PRIMARY : INK_SOFT }}>
                         {colorSoldOut ? 'Out of stock' : total > 0 ? `${total} selected` : c.stock != null ? `${c.stock} left` : ''}
                       </span>
                     </div>
@@ -397,7 +398,7 @@ export default function ColorPackSelector({ combo }) {
                               className="flex flex-col items-center px-2 py-1.5"
                               style={{
                                 borderRadius: '2px',
-                                border: `1px solid ${qty > 0 ? PURPLE : LINE}`,
+                                border: `1px solid ${qty > 0 ? PRIMARY : LINE}`,
                                 background: qty > 0 ? WASH : PAPER,
                                 opacity: sizeSoldOut ? 0.4 : 1,
                                 minWidth: '88px',
@@ -470,8 +471,8 @@ export default function ColorPackSelector({ combo }) {
               disabled={!canAdd}
               className="flex-1 flex items-center justify-center gap-2 text-sm font-medium py-3 rounded-full active:scale-[0.98] transition-transform disabled:cursor-not-allowed"
               style={{
-                border: `1px solid ${canAdd ? PURPLE : LINE}`,
-                color: canAdd ? PURPLE : INK_SOFT,
+                border: `1px solid ${canAdd ? PRIMARY : LINE}`,
+                color: canAdd ? PRIMARY : INK_SOFT,
                 background: PAPER,
               }}
             >
@@ -509,8 +510,8 @@ export default function ColorPackSelector({ combo }) {
             disabled={!canAdd}
             className="flex-1 flex items-center justify-center gap-2 text-sm font-medium py-3 rounded-full active:scale-[0.98] transition-transform disabled:cursor-not-allowed"
             style={{
-              border: `1px solid ${canAdd ? PURPLE : LINE}`,
-              color: canAdd ? PURPLE : INK_SOFT,
+              border: `1px solid ${canAdd ? PRIMARY : LINE}`,
+              color: canAdd ? PRIMARY : INK_SOFT,
               background: PAPER,
             }}
           >

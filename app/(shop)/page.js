@@ -28,17 +28,18 @@ import { ArrowRight, Tag } from 'lucide-react';
 // reviews) call revalidatePath('/') in those API routes as well.
 export const revalidate = 600;
 
-// Design tokens: shared purple / gold / ivory theme
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Design tokens: shared crimson / gold / cream theme
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
 // Keep in sync with Navbar and CouponMarquee.
-const PURPLE = '#4B087A';                        // primary brand / headings / prices
-const INK = '#24052F';                           // primary text
-const INK_FAINT = '#7A6685';                     // secondary text
-const GOLD = '#F7B900';                          // buttons, badges, premium details
-const LAVENDER = '#D9B4E8';                      // hairlines, soft fills, placeholders
-const LAVENDER_SOFT = 'rgba(217, 180, 232, 0.35)'; // image placeholder background
-const PAPER = '#FFF5E8';                         // page background (ivory)
-const HAIRLINE = LAVENDER;
+const PRIMARY = '#8F1538';                       // primary brand / headings / prices
+const INK = '#29211E';                           // primary text
+const INK_FAINT = '#8A7A70';                     // secondary text
+const GOLD = '#C58A08';                          // buttons, badges, premium details
+const SAVINGS = '#075447';                       // discount badges (highlight green)
+const LINE = '#E8D5C4';                          // hairlines, soft fills, placeholders
+const WASH = 'rgba(232, 213, 196, 0.35)';        // image placeholder background
+const PAPER = '#FFF9F0';                         // page background
+const HAIRLINE = LINE;
 
 // Minimalist type: a clean, quiet sans. Headings are bold + tracked out;
 // body copy stays light so the boldness reads as intentional, not noisy.
@@ -176,7 +177,7 @@ export default async function HomePage() {
           {/* h2 (was a second h1): a page should have only one h1 for SEO */}
           <h2
             className="text-xl sm:text-2xl font-bold tracking-[3px] uppercase mb-6 text-center"
-            style={{ color: PURPLE, fontFamily: FONT_SANS }}
+            style={{ color: PRIMARY, fontFamily: FONT_SANS }}
           >
             Shop by Category
           </h2>
@@ -190,7 +191,7 @@ export default async function HomePage() {
                 {/* Circular image */}
                 <div
                   className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden transition-transform duration-300 group-hover:scale-105"
-                  style={{ border: `1px solid ${HAIRLINE}`, background: LAVENDER_SOFT }}
+                  style={{ border: `1px solid ${HAIRLINE}`, background: WASH }}
                 >
                   {c.image ? (
                     <img
@@ -201,7 +202,7 @@ export default async function HomePage() {
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full" style={{ background: LAVENDER }} />
+                    <div className="w-full h-full" style={{ background: LINE }} />
                   )}
                 </div>
 
@@ -223,7 +224,7 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-4 pt-6 pb-16 text-center">
         <h3
           className="text-lg sm:text-xl font-bold tracking-[3px] uppercase"
-          style={{ color: PURPLE, fontFamily: FONT_SANS }}
+          style={{ color: PRIMARY, fontFamily: FONT_SANS }}
         >
           Featured Collection
         </h3>
@@ -239,7 +240,7 @@ export default async function HomePage() {
 
         <Link
           href="/products"
-          className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#F7B900] hover:bg-[#4B087A] text-[#24052F] hover:text-[#FFF5E8]"
+          className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#C58A08] hover:bg-[#8F1538] text-[#29211E] hover:text-[#FFF9F0]"
           style={{ fontFamily: FONT_SANS }}
         >
           Shop the collection
@@ -254,13 +255,13 @@ export default async function HomePage() {
           <div className="max-w-6xl mx-auto px-4 text-center">
             <span
               className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[3px] mb-3 px-3 py-1"
-              style={{ color: INK, background: GOLD, fontFamily: FONT_SANS }}
+              style={{ color: PAPER, background: SAVINGS, fontFamily: FONT_SANS }}
             >
               <Tag size={11} /> Limited Offers
             </span>
             <h2
               className="text-xl sm:text-2xl font-bold tracking-[3px] uppercase"
-              style={{ color: PURPLE, fontFamily: FONT_SANS }}
+              style={{ color: PRIMARY, fontFamily: FONT_SANS }}
             >
               Discount Offers
             </h2>
@@ -273,7 +274,7 @@ export default async function HomePage() {
 
             <Link
               href="/discounts"
-              className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#F7B900] hover:bg-[#4B087A] text-[#24052F] hover:text-[#FFF5E8]"
+              className="inline-block mt-10 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#C58A08] hover:bg-[#8F1538] text-[#29211E] hover:text-[#FFF9F0]"
               style={{ fontFamily: FONT_SANS }}
             >
               View all offers
@@ -289,13 +290,13 @@ export default async function HomePage() {
             <div className="flex flex-col items-center text-center mb-8">
               <span
                 className="text-[11px] font-bold uppercase tracking-[3px] mb-3 px-3 py-1"
-                style={{ color: INK, background: LAVENDER, fontFamily: FONT_SANS }}
+                style={{ color: INK, background: LINE, fontFamily: FONT_SANS }}
               >
                 Save More
               </span>
               <h2
                 className="text-xl sm:text-2xl font-bold tracking-[1px]"
-                style={{ color: PURPLE, fontFamily: FONT_SANS }}
+                style={{ color: PRIMARY, fontFamily: FONT_SANS }}
               >
                 Combo Offers
               </h2>
@@ -305,7 +306,7 @@ export default async function HomePage() {
               <Link
                 href="/combo"
                 className="hidden sm:flex items-center gap-1 text-sm font-bold hover:gap-2 transition-all mt-3"
-                style={{ color: PURPLE, fontFamily: FONT_SANS }}
+                style={{ color: PRIMARY, fontFamily: FONT_SANS }}
               >
                 View all <ArrowRight size={14} />
               </Link>
@@ -337,7 +338,7 @@ export default async function HomePage() {
                     {/* Image */}
                     <div
                       className="relative w-full aspect-square overflow-hidden"
-                      style={{ background: LAVENDER_SOFT }}
+                      style={{ background: WASH }}
                     >
                       {cover ? (
                         <img
@@ -348,12 +349,12 @@ export default async function HomePage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full" style={{ background: LAVENDER }} />
+                        <div className="w-full h-full" style={{ background: LINE }} />
                       )}
                       {pct > 0 && (
                         <div
                           className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 flex items-center gap-1"
-                          style={{ color: INK, background: GOLD, fontFamily: FONT_SANS }}
+                          style={{ color: PAPER, background: SAVINGS, fontFamily: FONT_SANS }}
                         >
                           <Tag size={9} /> {pct}% off
                         </div>
@@ -361,7 +362,7 @@ export default async function HomePage() {
                       {isColorPack && (
                         <div
                           className="absolute top-2 right-2 text-[10px] font-medium px-2 py-0.5"
-                          style={{ background: PURPLE, color: PAPER }}
+                          style={{ background: PRIMARY, color: PAPER }}
                         >
                           Color Pack
                         </div>
@@ -377,7 +378,7 @@ export default async function HomePage() {
                         {c.name}
                       </p>
                       <div className="flex items-baseline gap-2 mt-1.5">
-                        <span className="font-bold text-sm" style={{ color: PURPLE, fontFamily: FONT_SANS }}>
+                        <span className="font-bold text-sm" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>
                           {isColorPack && 'From '}{formatINR(displayPrice)}
                         </span>
                         {savings > 0 && (
@@ -392,7 +393,7 @@ export default async function HomePage() {
                       {savings > 0 && (
                         <p
                           className="text-[10.5px] font-bold mt-1 tracking-wide uppercase"
-                          style={{ color: INK_FAINT, fontFamily: FONT_SANS }}
+                          style={{ color: SAVINGS, fontFamily: FONT_SANS }}
                         >
                           Save {formatINR(savings)}
                         </p>
@@ -404,7 +405,7 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-8 text-center sm:hidden">
-              <Link href="/combo" className="text-sm font-bold" style={{ color: PURPLE, fontFamily: FONT_SANS }}>
+              <Link href="/combo" className="text-sm font-bold" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>
                 View all combos →
               </Link>
             </div>

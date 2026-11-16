@@ -3,12 +3,12 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const INK = '#24052F';        // deep purple for text
-const INK_FAINT = '#6E5A7C';  // muted purple-grey for labels and icon
-const GOLD = '#F7B900';       // focus accent
-const HAIRLINE = '#D9B4E8';   // soft lavender borders
-const PAPER = '#FFF5E8';      // ivory background
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';        // text
+const INK_FAINT = '#7A6A63';  // muted labels and icon (derived from text)
+const ACCENT = '#E60062';     // focus accent
+const HAIRLINE = '#E5CDD3';   // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';      // background
 
 export default function Filters({ sort, onSortChange }) {
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function Filters({ sort, onSortChange }) {
             onChange={(e) => handleChange(e.target.value)}
             className="appearance-none bg-transparent outline-none text-[12px] tracking-wide pr-6 py-1"
             style={{ color: INK, borderBottom: `1px solid ${HAIRLINE}` }}
-            onFocus={(e) => (e.currentTarget.style.borderBottomColor = GOLD)}
+            onFocus={(e) => (e.currentTarget.style.borderBottomColor = ACCENT)}
             onBlur={(e) => (e.currentTarget.style.borderBottomColor = HAIRLINE)}
           >
             {/* <option value="newest">Newest</option> */}

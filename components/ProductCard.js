@@ -12,12 +12,13 @@ import { useWishlist } from '@/components/WhishlistContext'; // adjust path as n
 // Loaded only when a customer actually taps "Notify me" (keeps the grid light)
 const NotifyMeModal = dynamic(() => import('@/components/Notifymemodal'), { ssr: false });
 
-const PURPLE = '#4B087A';
-const GOLD = '#F7B900';
-const INK = '#24052F';
-const INK_FAINT = '#6E5A7C';
-const WASH = '#F6EAF9';
-const PAPER = '#FFF5E8';
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';    // crimson: price, low-stock pill, Notify me button, wishlist heart
+const GOLD = '#C58A08';       // secondary: Sale / Offer pill, discount badge, wishlist fill
+const INK = '#29211E';        // text
+const INK_FAINT = '#7A6A63';  // muted text (derived from text)
+const WASH = '#F6ECE0';       // image placeholder fill (derived from background)
+const PAPER = '#FFF9F0';      // background
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 const pillBase = { padding: '6px 14px', borderRadius: '999px' };
@@ -65,12 +66,12 @@ function ProductCard({ product, priority = false }) {
         aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         aria-pressed={wishlisted}
         className="absolute top-4 right-4 z-10 flex items-center justify-center w-8 h-8 rounded-full transition-transform active:scale-90"
-        style={{ background: 'rgba(255,245,232,0.92)' }}
+        style={{ background: 'rgba(255,249,240,0.92)' }}
       >
         <Heart
           className="w-4 h-4"
           strokeWidth={2}
-          style={{ color: wishlisted ? PURPLE : INK }}
+          style={{ color: wishlisted ? PRIMARY : INK }}
           fill={wishlisted ? GOLD : 'none'}
         />
       </button>
@@ -93,7 +94,7 @@ function ProductCard({ product, priority = false }) {
                 Out of stock
               </span>
             ) : lowStock ? (
-              <span className="text-xs font-semibold uppercase tracking-wider" style={{ ...pillBase, color: PAPER, background: PURPLE }}>
+              <span className="text-xs font-semibold uppercase tracking-wider" style={{ ...pillBase, color: PAPER, background: PRIMARY }}>
                 {totalStock} left
               </span>
             ) : discountPct > 0 ? (
@@ -117,7 +118,7 @@ function ProductCard({ product, priority = false }) {
           </h3>
 
           <div className="mt-1 flex items-baseline gap-x-3 gap-y-1 flex-wrap">
-            <span className="font-bold text-lg sm:text-xl" style={{ color: PURPLE }}>
+            <span className="font-bold text-lg sm:text-xl" style={{ color: PRIMARY }}>
               {formatINR(price)}
             </span>
 
@@ -151,7 +152,7 @@ function ProductCard({ product, priority = false }) {
             type="button"
             onClick={() => setNotifyOpen(true)}
             className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-transform active:scale-95"
-            style={{ background: PURPLE, color: PAPER }}
+            style={{ background: PRIMARY, color: PAPER }}
           >
             <Bell className="w-4 h-4" strokeWidth={2} />
             Notify me

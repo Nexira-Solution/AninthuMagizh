@@ -5,14 +5,14 @@ import Settings from '@/models/Settings';
 import { formatINR } from '@/lib/utils';
 import PrintButton from '@/components/PrintButton';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const PEACH = '#F7B900';        // accent (gold)
-const PEACH_LIGHT = '#F3E6F8';  // accent background (light lavender)
-const LINE = '#D9B4E8';         // borders (lavender)
-const PAPER = '#FFF5E8';        // page background (ivory)
-const PURPLE = '#4B087A';       // royal purple (labels, COD highlight)
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const PEACH = '#C58A08';        // accent (gold)
+const PEACH_LIGHT = '#F6EADB';  // accent background (light warm tint)
+const LINE = '#E8D5C4';         // borders (soft warm)
+const PAPER = '#FFF9F0';        // page background
+const PURPLE = '#8F1538';       // primary (name kept for consistency with other files)
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 export default async function CourierBillPage({ params }) {
@@ -31,13 +31,13 @@ export default async function CourierBillPage({ params }) {
   return (
     <div
       className="max-w-md mx-auto p-7 m-6"
-      style={{ background: PAPER, border: `1px solid ${LINE}`, borderRadius: '4px', color: INK }}
+      style={{ background: PAPER, border: `1px solid ${LINE}`, borderTop: `2px solid ${PEACH}`, borderRadius: '4px', color: INK }}
     >
       <div
         className="flex justify-between items-center pb-4 mb-4"
         style={{ borderBottom: `1px dashed ${LINE}` }}
       >
-        <h1 className="text-lg tracking-tight" style={{ fontFamily: FONT_SERIF, color: INK }}>
+        <h1 className="text-lg tracking-tight" style={{ fontFamily: FONT_SERIF, color: PURPLE }}>
           Shipping Label
         </h1>
         <span

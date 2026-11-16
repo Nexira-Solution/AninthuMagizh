@@ -48,7 +48,7 @@ const getProducts = unstable_cache(
 );
 
 export const metadata = {
-  title: 'All Products | Purple Queen',
+  title: 'All Products | Aninthu Magizh',
 };
 
 export default async function ProductsPage({ searchParams }) {
@@ -68,52 +68,57 @@ export default async function ProductsPage({ searchParams }) {
   const pageHref = (n) => `/products?sort=${sort}&page=${n}`;
 
   return (
-    <section className="max-w-6xl mx-auto px-5 py-16 bg-white">
-      <div className="mb-10 flex items-baseline justify-between flex-wrap gap-3">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-neutral-900">
-          All Products
-        </h1>
-        <span className="text-xs tracking-wide text-neutral-400">
-          {total} {total === 1 ? 'item' : 'items'}
-        </span>
-      </div>
-
-      <Filters sort={sort} />
-
-      {cards.length === 0 ? (
-        <p className="text-neutral-400 text-sm">
-          Nothing here yet — check back soon.
-        </p>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-6">
-          {cards.map((p, i) => (
-            // First row loads first (it is above the fold)
-            <ProductCard key={p._id} product={p} priority={page === 1 && i < 2} />
-          ))}
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <nav className="mt-12 flex items-center justify-center gap-6 text-sm" aria-label="Pagination">
-          {page > 1 ? (
-            <Link href={pageHref(page - 1)} prefetch={false} className="text-neutral-900 hover:underline">
-              ← Previous
-            </Link>
-          ) : (
-            <span className="text-neutral-300">← Previous</span>
-          )}
-          <span className="text-neutral-400 text-xs tracking-wide">
-            Page {page} of {totalPages}
+    <div className="min-h-screen bg-brand-bg">
+      <section className="max-w-6xl mx-auto px-5 py-16">
+        <div className="mb-10 flex items-baseline justify-between flex-wrap gap-3">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-brand-primary">
+              All Products
+            </h1>
+            <div className="w-12 h-[2px] mt-3 bg-brand-secondary" />
+          </div>
+          <span className="text-xs tracking-wide text-brand-inksoft">
+            {total} {total === 1 ? 'item' : 'items'}
           </span>
-          {page < totalPages ? (
-            <Link href={pageHref(page + 1)} prefetch={false} className="text-neutral-900 hover:underline">
-              Next →
-            </Link>
-          ) : (
-            <span className="text-neutral-300">Next →</span>
-          )}
-        </nav>
-      )}
-    </section>
+        </div>
+
+        <Filters sort={sort} />
+
+        {cards.length === 0 ? (
+          <p className="text-brand-inksoft text-sm">
+            Nothing here yet — check back soon.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-6">
+            {cards.map((p, i) => (
+              // First row loads first (it is above the fold)
+              <ProductCard key={p._id} product={p} priority={page === 1 && i < 2} />
+            ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <nav className="mt-12 flex items-center justify-center gap-6 text-sm" aria-label="Pagination">
+            {page > 1 ? (
+              <Link href={pageHref(page - 1)} prefetch={false} className="text-brand-primary hover:underline">
+                ← Previous
+              </Link>
+            ) : (
+              <span className="text-brand-line">← Previous</span>
+            )}
+            <span className="text-brand-inksoft text-xs tracking-wide">
+              Page {page} of {totalPages}
+            </span>
+            {page < totalPages ? (
+              <Link href={pageHref(page + 1)} prefetch={false} className="text-brand-primary hover:underline">
+                Next →
+              </Link>
+            ) : (
+              <span className="text-brand-line">Next →</span>
+            )}
+          </nav>
+        )}
+      </section>
+    </div>
   );
 }

@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const PURPLE = '#4B087A';     // royal purple: active page
-const INK = '#24052F';        // deep purple for text
-const INK_FAINT = '#6E5A7C';  // muted purple-grey for the ellipsis
-const PAPER = '#FFF5E8';      // ivory
-const HAIRLINE = '#D9B4E8';   // soft lavender borders
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';    // crimson: active page
+const INK = '#29211E';        // text
+const INK_FAINT = '#7A6A63';  // muted text for the ellipsis (derived from text)
+const PAPER = '#FFF9F0';      // background
+const HAIRLINE = '#E5CDD3';   // soft borders (derived tint of primary)
 
 function getPageNumbers(current, total) {
   const delta = 1;
@@ -43,8 +43,8 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
     justifyContent: 'center',
     borderRadius: 9999,
     color: isActive ? PAPER : INK,
-    background: isActive ? PURPLE : 'transparent',
-    border: isActive ? `1px solid ${PURPLE}` : `1px solid ${HAIRLINE}`,
+    background: isActive ? PRIMARY : 'transparent',
+    border: isActive ? `1px solid ${PRIMARY}` : `1px solid ${HAIRLINE}`,
   });
 
   return (

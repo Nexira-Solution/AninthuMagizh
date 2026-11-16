@@ -1,8 +1,8 @@
 'use client';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const GOLD = '#F7B900'; // buttons
-const INK = '#24052F';  // deep purple text on gold
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const GOLD = '#C58A08'; // secondary: button
+const INK = '#29211E';  // text on gold
 
 export default function PrintButton({ label = 'Print / Save as PDF' }) {
   return (

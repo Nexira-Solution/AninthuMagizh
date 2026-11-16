@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const LINE = '#D9B4E8';         // borders (lavender)
-const PAPER = '#FFF5E8';        // page background (ivory)
-const PURPLE = '#4B087A';       // royal purple (brand name, focus border)
-const GOLD = '#F7B900';         // button
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const LINE = '#E8D5C4';         // borders (soft warm)
+const PAPER = '#FFF9F0';        // page background
+const PRIMARY = '#8F1538';      // brand name, focus border
+const GOLD = '#C58A08';         // button
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -40,10 +40,11 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: PAPER }}>
       <form onSubmit={submit} className="w-full max-w-[340px]">
         <div className="text-center mb-8">
-          <h1 className="text-xl font-medium" style={{ color: PURPLE }}>
-            Purple Queen
+          <h1 className="text-xl font-medium" style={{ color: PRIMARY }}>
+            Aninthu Magizh
           </h1>
-          <p className="text-xs mt-1.5" style={{ color: INK_SOFT }}>Admin sign in</p>
+          <div className="w-12 h-[2px] mx-auto mt-3" style={{ background: GOLD }} />
+          <p className="text-xs mt-3" style={{ color: INK_SOFT }}>Admin sign in</p>
         </div>
 
         <div className="space-y-3">
@@ -55,7 +56,7 @@ export default function AdminLoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2.5 text-sm bg-transparent outline-none transition-colors"
             style={{ border: `1px solid ${LINE}`, borderRadius: '4px', color: INK }}
-            onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+            onFocus={(e) => (e.target.style.borderColor = PRIMARY)}
             onBlur={(e) => (e.target.style.borderColor = LINE)}
           />
           <input
@@ -66,7 +67,7 @@ export default function AdminLoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2.5 text-sm bg-transparent outline-none transition-colors"
             style={{ border: `1px solid ${LINE}`, borderRadius: '4px', color: INK }}
-            onFocus={(e) => (e.target.style.borderColor = PURPLE)}
+            onFocus={(e) => (e.target.style.borderColor = PRIMARY)}
             onBlur={(e) => (e.target.style.borderColor = LINE)}
           />
         </div>

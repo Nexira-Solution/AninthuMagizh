@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Instagram, Facebook, Youtube } from 'lucide-react';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
 // Keep in sync with Footer.
-const ACCENT = '#F7B900';
-const TEXT = '#FFF5E8';
-const TEXT_SOFT = 'rgba(255,245,232,0.75)';
-const LINE = 'rgba(255,245,232,0.2)';
+const ACCENT = '#E8B84A';                  // light gold (derived from secondary) for contrast on crimson
+const TEXT = '#FFF9F0';                    // cream
+const TEXT_SOFT = 'rgba(255,249,240,0.75)';
+const LINE = 'rgba(255,249,240,0.2)';
 
 // Footer passes plain keys (server -> client components can't pass icon components),
 // and the icons are looked up here.

@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Tag, Truck } from 'lucide-react';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
 // Keep these tokens in sync with Navbar if you tweak the palette.
-const BG = '#6B2682';                       // slightly darker medium purple
-const TEXT = '#FFF5E8';                     // ivory text
-const TEXT_FAINT = 'rgba(255, 245, 232, 0.75)';
-const ACCENT = '#F7B900';                   // gold icons / coupon code underline
+const BG = '#8F1538';                       // primary crimson
+const TEXT = '#FFF9F0';                     // cream text
+const TEXT_FAINT = 'rgba(255, 249, 240, 0.75)';
+const ACCENT = '#E8B84A';                   // light gold (derived from secondary) for icons / coupon code underline
 
 // A quiet serif, matched to the wordmark used elsewhere on the site,
 // so the marquee reads as part of the same brand rather than generic UI text.

@@ -4,11 +4,14 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, CheckCircle2 } from 'lucide-react';
 
-const PURPLE = '#4B087A';
-const GOLD = '#F7B900';
-const INK = '#24052F';
-const INK_FAINT = '#6E5A7C';
-const PAPER = '#FFF5E8';
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';     // crimson: "Done" button
+const GOLD = '#C58A08';        // secondary: submit button
+const SUCCESS = '#075447';     // highlight: success check icon
+const INK = '#29211E';         // text
+const INK_FAINT = '#7A6A63';   // muted text and input borders (derived from text)
+const PAPER = '#FFF9F0';       // background
+const ERROR = '#B3261E';       // form errors (kept as-is so errors read as a warning)
 
 export default function NotifyMeModal({ product, onClose }) {
   const [name, setName] = useState('');
@@ -53,7 +56,7 @@ export default function NotifyMeModal({ product, onClose }) {
   return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
-      style={{ background: 'rgba(36,5,47,0.55)' }}
+      style={{ background: 'rgba(41,33,30,0.55)' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -70,12 +73,12 @@ export default function NotifyMeModal({ product, onClose }) {
 
         {status === 'done' ? (
           <div className="text-center py-6">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-3" style={{ color: PURPLE }} />
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-3" style={{ color: SUCCESS }} />
             <h3 className="text-lg font-semibold">You're on the list!</h3>
             <p className="text-sm mt-2" style={{ color: INK_FAINT }}>
               We'll message you on WhatsApp as soon as <b>{product.name}</b> is back.
             </p>
-            <button onClick={onClose} className="mt-5 px-6 py-3 rounded-full font-semibold" style={{ background: PURPLE, color: PAPER }}>
+            <button onClick={onClose} className="mt-5 px-6 py-3 rounded-full font-semibold" style={{ background: PRIMARY, color: PAPER }}>
               Done
             </button>
           </div>
@@ -99,7 +102,7 @@ export default function NotifyMeModal({ product, onClose }) {
               />
             </div>
 
-            {error && <p className="text-sm" style={{ color: '#B3261E' }}>{error}</p>}
+            {error && <p className="text-sm" style={{ color: ERROR }}>{error}</p>}
 
             <button
               type="submit" disabled={status === 'loading'}

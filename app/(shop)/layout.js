@@ -12,7 +12,7 @@ export default async function ShopLayout({ children }) {
       <Navbar categories={categories} />
       <main className="min-h-screen">{children}</main>
       <Footer />
-      <WhatsAppButton phone="919791368249" />
+      <WhatsAppButton phone="916369116002" />
     </>
   );
 }

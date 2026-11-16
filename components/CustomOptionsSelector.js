@@ -1,12 +1,12 @@
 'use client';
 
-// Same purple / gold / ivory tokens as the product page.
-const INK = '#24052F';
-const INK_SOFT = '#7A6685';
-const PURPLE = '#4B087A';
-const LINE = '#D9B4E8';
-const PAPER = '#FFF5E8';
-const WASH = '#F3E6F8';
+// Same crimson / gold / cream tokens as the product page.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';       // text
+const INK_SOFT = '#7A6A63';  // muted labels (derived from text)
+const PRIMARY = '#8F1538';   // selected chips and required marker
+const LINE = '#E5CDD3';      // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';     // background
 
 // groups: product.optionGroups
 // picks:  { [groupName]: choiceLabel }
@@ -22,7 +22,7 @@ export default function CustomOptionsSelector({ groups, picks, onPick, formatINR
           <div key={g.name}>
             <p className="text-sm mb-2" style={{ color: INK_SOFT }}>
               {g.name}
-              {g.required !== false && <span style={{ color: PURPLE }}> *</span>}
+              {g.required !== false && <span style={{ color: PRIMARY }}> *</span>}
               {selected && <span style={{ color: INK }}> — {selected}</span>}
             </p>
             <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={g.name}>
@@ -38,8 +38,8 @@ export default function CustomOptionsSelector({ groups, picks, onPick, formatINR
                     className="px-3.5 py-2 text-sm transition-colors"
                     style={{
                       borderRadius: '4px',
-                      border: `1px solid ${active ? PURPLE : LINE}`,
-                      background: active ? PURPLE : PAPER,
+                      border: `1px solid ${active ? PRIMARY : LINE}`,
+                      background: active ? PRIMARY : PAPER,
                       color: active ? PAPER : INK,
                     }}
                   >

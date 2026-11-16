@@ -2,13 +2,15 @@
 
 import { Plus, Trash2, X } from 'lucide-react';
 
-// Same royal purple / gold / ivory tokens as ProductForm.
-const INK = '#24052F';
-const INK_SOFT = '#6E5A7C';
-const PURPLE = '#4B087A';
-const WASH = '#F6EAF9';
-const LINE = '#D9B4E8';
-const PAPER = '#FFF5E8';
+// Same crimson / gold / cream tokens as ProductForm.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';        // text
+const INK_SOFT = '#7A6A63';   // muted labels and hints (derived from text)
+const PRIMARY = '#8F1538';    // outlined buttons, choice accent line, checkbox
+const ACCENT = '#E60062';     // input focus border
+const WASH = '#F6ECE0';       // light cream tint for group panels (derived from background)
+const LINE = '#E5CDD3';       // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';      // background
 
 const inputStyle = {
   border: `1px solid ${LINE}`,
@@ -24,8 +26,8 @@ const inputStyle = {
 
 const smallBtn = {
   background: PAPER,
-  color: PURPLE,
-  border: `1px solid ${PURPLE}`,
+  color: PRIMARY,
+  border: `1px solid ${PRIMARY}`,
   borderRadius: '4px',
   fontFamily: 'sans-serif',
   cursor: 'pointer',
@@ -36,7 +38,7 @@ const PRESETS = [
   { name: 'Zip Type', choices: ['With Zip', 'Without Zip'] },
 ];
 
-const focusOn = (e) => (e.target.style.borderColor = PURPLE);
+const focusOn = (e) => (e.target.style.borderColor = ACCENT);
 const focusOff = (e) => (e.target.style.borderColor = LINE);
 
 // value: [{ name, required, choices: [{ label, price }] }]
@@ -134,7 +136,7 @@ export default function OptionGroupsEditor({ value, onChange }) {
                 type="checkbox"
                 checked={g.required !== false}
                 onChange={(e) => updateGroup(gi, { required: e.target.checked })}
-                style={{ accentColor: PURPLE, width: '15px', height: '15px' }}
+                style={{ accentColor: PRIMARY, width: '15px', height: '15px' }}
               />
               Customer must choose
             </label>
@@ -149,7 +151,7 @@ export default function OptionGroupsEditor({ value, onChange }) {
           </div>
 
           {g.choices.map((c, ci) => (
-            <div key={ci} className="flex items-center gap-2 mb-2 pl-3" style={{ borderLeft: `2px solid ${PURPLE}` }}>
+            <div key={ci} className="flex items-center gap-2 mb-2 pl-3" style={{ borderLeft: `2px solid ${PRIMARY}` }}>
               <input
                 placeholder="Choice (e.g. Full Sleeve)"
                 style={{ ...inputStyle, flex: 1 }}
@@ -184,7 +186,7 @@ export default function OptionGroupsEditor({ value, onChange }) {
           <button
             type="button"
             onClick={() => addChoice(gi)}
-            style={{ fontSize: '12px', color: PURPLE, fontFamily: 'sans-serif', fontWeight: 500, cursor: 'pointer' }}
+            style={{ fontSize: '12px', color: PRIMARY, fontFamily: 'sans-serif', fontWeight: 500, cursor: 'pointer' }}
           >
             + Add choice
           </button>

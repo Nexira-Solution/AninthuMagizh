@@ -6,19 +6,22 @@ import toast from 'react-hot-toast';
 import { Package, Phone, Truck, Star, X, Loader2, ImagePlus, CheckCircle2 } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 
-// Theme: #4B087A (royal purple), #F7B900 (gold), #FFF5E8 (ivory), #24052F (deep plum), #D9B4E8 (lavender)
-const INK = '#24052F';          // primary text
-const INK_SOFT = '#7A6685';     // muted text (derived plum-gray)
-const PEACH = '#F7B900';        // accent (gold) - stars, icons, dashed borders, buttons
-const PEACH_LIGHT = '#F3E6F8';  // accent background (light lavender)
-const PEACH_WASH = '#F9F0FC';   // lighter lavender tint (image placeholders)
-const GOLD_WASH = '#FFF0C2';    // pale gold tint (status chips)
-const NEUTRAL_WASH = '#F1E8F5'; // neutral status chip background
-const LINE = '#D9B4E8';         // borders (lavender)
-const PAPER = '#FFF5E8';        // page background (ivory)
-const PURPLE = '#4B087A';       // royal purple (prices, success, links)
-const RUST = '#B0503A';         // errors / cancelled (kept for clear warning color)
-const GOLD_DARK = '#8A6500';    // darker gold for readable accent text on light tints
+// Theme: #8F1538 (primary), #C58A08 (secondary), #FFF9F0 (background), #E60062 (accent), #075447 (highlight), #29211E (text)
+const INK = '#29211E';          // primary text
+const INK_SOFT = '#8A7A70';     // muted text (derived warm gray)
+const PEACH = '#C58A08';        // accent (gold) - stars, icons, dashed borders, buttons
+const PEACH_LIGHT = '#F6EADB';  // accent background (light warm tint)
+const PEACH_WASH = '#FBF2E6';   // lighter warm tint (image placeholders)
+const GOLD_WASH = '#F8EBC8';    // pale gold tint (status chips)
+const NEUTRAL_WASH = '#F1E8DE'; // neutral status chip background
+const LINE = '#E8D5C4';         // borders (soft warm)
+const PAPER = '#FFF9F0';        // page background
+const PURPLE = '#8F1538';       // primary (name kept for consistency with other files)
+const SUCCESS = '#075447';      // delivered / reviewed (highlight green)
+const SUCCESS_WASH = '#DCEDE8'; // light green tint (delivered chip)
+const ACCENT = '#E60062';       // errors / cancelled
+const ACCENT_WASH = '#FDE6EF';  // light pink tint (cancelled chip, error)
+const GOLD_DARK = '#8A6100';    // darker gold for readable accent text on light tints
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const STATUS_STYLES = {
@@ -26,8 +29,8 @@ const STATUS_STYLES = {
   confirmed: { color: GOLD_DARK, background: GOLD_WASH },
   packed:    { color: GOLD_DARK, background: GOLD_WASH },
   shipped:   { color: INK,       background: PEACH_LIGHT },
-  delivered: { color: PURPLE,    background: '#EBD9F5' },
-  cancelled: { color: RUST,      background: '#FBEAE6' },
+  delivered: { color: SUCCESS,   background: SUCCESS_WASH },
+  cancelled: { color: ACCENT,    background: ACCENT_WASH },
   returned:  { color: INK_SOFT,  background: NEUTRAL_WASH },
 };
 
@@ -195,137 +198,139 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto px-5 py-10 sm:py-14 min-h-[60vh]" style={{ background: PAPER }}>
-      <h1 className="text-[24px] sm:text-[28px] mb-1.5" style={{ fontFamily: FONT_SERIF, color: INK }}>
-        My Orders
-      </h1>
-      <p className="text-sm mb-7" style={{ color: INK_SOFT }}>
-        Enter the phone number you used at checkout to view your orders.
-      </p>
+    <div className="min-h-screen" style={{ background: PAPER }}>
+      <div className="max-w-xl mx-auto px-5 py-10 sm:py-14 min-h-[60vh]">
+        <h1 className="text-[24px] sm:text-[28px] mb-1.5" style={{ fontFamily: FONT_SERIF, color: PURPLE }}>
+          My Orders
+        </h1>
+        <p className="text-sm mb-7" style={{ color: INK_SOFT }}>
+          Enter the phone number you used at checkout to view your orders.
+        </p>
 
-      <form onSubmit={handleLookup} className="flex gap-2 mb-2">
-        <div className="flex-1 relative">
-          <Phone size={14} strokeWidth={1.5} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: INK_SOFT }} />
-          <input
-            type="tel"
-            inputMode="numeric"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="10-digit phone number"
-            maxLength={10}
-            className="w-full pl-9 pr-3.5 py-2.5 text-sm outline-none"
-            style={{ border: `1px solid ${LINE}`, borderRadius: '3px', color: INK, background: PAPER }}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="text-sm font-semibold px-5 py-2.5 shrink-0 transition-opacity active:opacity-80 disabled:opacity-50"
-          style={{ background: PEACH, color: INK, borderRadius: '3px' }}
-        >
-          {loading ? 'Searching…' : 'Find Orders'}
-        </button>
-      </form>
+        <form onSubmit={handleLookup} className="flex gap-2 mb-2">
+          <div className="flex-1 relative">
+            <Phone size={14} strokeWidth={1.5} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: INK_SOFT }} />
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="10-digit phone number"
+              maxLength={10}
+              className="w-full pl-9 pr-3.5 py-2.5 text-sm outline-none"
+              style={{ border: `1px solid ${LINE}`, borderRadius: '3px', color: INK, background: PAPER }}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="text-sm font-semibold px-5 py-2.5 shrink-0 transition-opacity active:opacity-80 disabled:opacity-50"
+            style={{ background: PEACH, color: INK, borderRadius: '3px' }}
+          >
+            {loading ? 'Searching…' : 'Find Orders'}
+          </button>
+        </form>
 
-      {error && <p className="text-sm mb-4" style={{ color: RUST }}>{error}</p>}
+        {error && <p className="text-sm mb-4" style={{ color: ACCENT }}>{error}</p>}
 
-      {orders !== null && orders.length === 0 && !error && (
-        <div className="text-center py-16">
-          <Package size={26} strokeWidth={1.5} className="mx-auto mb-3" style={{ color: PEACH, opacity: 0.6 }} />
-          <p className="text-sm" style={{ color: INK_SOFT }}>No orders found for this number</p>
-        </div>
-      )}
+        {orders !== null && orders.length === 0 && !error && (
+          <div className="text-center py-16">
+            <Package size={26} strokeWidth={1.5} className="mx-auto mb-3" style={{ color: PEACH, opacity: 0.6 }} />
+            <p className="text-sm" style={{ color: INK_SOFT }}>No orders found for this number</p>
+          </div>
+        )}
 
-      <div className="space-y-4 mt-6">
-        {orders?.map((o) => {
-          const statusStyle = STATUS_STYLES[o.status] || { color: INK_SOFT, background: NEUTRAL_WASH };
-          return (
-            <div key={o._id} className="p-4" style={{ border: `1px solid ${LINE}`, borderRadius: '4px' }}>
-              <div className="flex items-center justify-between mb-3.5">
-                <span className="text-xs" style={{ color: INK_SOFT }}>#{o.orderNumber}</span>
-                <span
-                  className="text-[10.5px] font-medium px-2.5 py-1 capitalize"
-                  style={{ ...statusStyle, borderRadius: '3px' }}
-                >
-                  {o.status}
-                </span>
-              </div>
+        <div className="space-y-4 mt-6">
+          {orders?.map((o) => {
+            const statusStyle = STATUS_STYLES[o.status] || { color: INK_SOFT, background: NEUTRAL_WASH };
+            return (
+              <div key={o._id} className="p-4" style={{ border: `1px solid ${LINE}`, borderRadius: '4px' }}>
+                <div className="flex items-center justify-between mb-3.5">
+                  <span className="text-xs" style={{ color: INK_SOFT }}>#{o.orderNumber}</span>
+                  <span
+                    className="text-[10.5px] font-medium px-2.5 py-1 capitalize"
+                    style={{ ...statusStyle, borderRadius: '3px' }}
+                  >
+                    {o.status}
+                  </span>
+                </div>
 
-              <div className="space-y-3 mb-3.5">
-                {o.items.map((it, i) => {
-                  const reviewKey = `${o._id}-${it.product}`;
-                  const alreadyReviewed = reviewedMap[o._id]?.has(String(it.product));
-                  const canReview = o.status === 'delivered' && it.product && !it.isCombo;
-                  const variantLabel = [it.sleeveType, it.zipType, it.pantOption?.name, it.shawlOption?.name]
-                    .filter(Boolean)
-                    .join(' · ');
+                <div className="space-y-3 mb-3.5">
+                  {o.items.map((it, i) => {
+                    const reviewKey = `${o._id}-${it.product}`;
+                    const alreadyReviewed = reviewedMap[o._id]?.has(String(it.product));
+                    const canReview = o.status === 'delivered' && it.product && !it.isCombo;
+                    const variantLabel = [it.sleeveType, it.zipType, it.pantOption?.name, it.shawlOption?.name]
+                      .filter(Boolean)
+                      .join(' · ');
 
-                  return (
-                    <div key={i}>
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-11 h-11 overflow-hidden shrink-0 relative" style={{ background: PEACH_WASH, borderRadius: '3px' }}>
-                          {it.image && <Image src={it.image} alt={it.name} fill className="object-cover" />}
+                    return (
+                      <div key={i}>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-11 h-11 overflow-hidden shrink-0 relative" style={{ background: PEACH_WASH, borderRadius: '3px' }}>
+                            {it.image && <Image src={it.image} alt={it.name} fill className="object-cover" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm truncate" style={{ color: INK }}>{it.name}</p>
+                            <p className="text-xs" style={{ color: INK_SOFT }}>
+                              Qty {it.qty}{variantLabel ? ` · ${variantLabel}` : ''}
+                            </p>
+                          </div>
+                          {canReview && (
+                            alreadyReviewed ? (
+                              <span className="flex items-center gap-1 text-[11px] shrink-0" style={{ color: SUCCESS }}>
+                                <CheckCircle2 size={12} strokeWidth={1.5} /> Reviewed
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setOpenReview(openReview === reviewKey ? null : reviewKey)}
+                                className="flex items-center gap-1 text-[11px] font-medium shrink-0"
+                                style={{ color: PURPLE }}
+                              >
+                                <Star size={12} strokeWidth={1.5} style={{ color: PEACH }} /> Rate
+                              </button>
+                            )
+                          )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm truncate" style={{ color: INK }}>{it.name}</p>
-                          <p className="text-xs" style={{ color: INK_SOFT }}>
-                            Qty {it.qty}{variantLabel ? ` · ${variantLabel}` : ''}
-                          </p>
-                        </div>
-                        {canReview && (
-                          alreadyReviewed ? (
-                            <span className="flex items-center gap-1 text-[11px] shrink-0" style={{ color: PURPLE }}>
-                              <CheckCircle2 size={12} strokeWidth={1.5} /> Reviewed
-                            </span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => setOpenReview(openReview === reviewKey ? null : reviewKey)}
-                              className="flex items-center gap-1 text-[11px] font-medium shrink-0"
-                              style={{ color: PURPLE }}
-                            >
-                              <Star size={12} strokeWidth={1.5} style={{ color: PEACH }} /> Rate
-                            </button>
-                          )
+                        {openReview === reviewKey && (
+                          <ReviewForm
+                            order={o}
+                            item={it}
+                            phone={phone.replace(/\D/g, '').slice(-10)}
+                            onDone={() => markReviewed(o._id, it.product)}
+                          />
                         )}
                       </div>
-                      {openReview === reviewKey && (
-                        <ReviewForm
-                          order={o}
-                          item={it}
-                          phone={phone.replace(/\D/g, '').slice(-10)}
-                          onDone={() => markReviewed(o._id, it.product)}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-between text-sm pt-3.5" style={{ borderTop: `1px solid ${LINE}` }}>
-                <span style={{ color: INK_SOFT }}>
-                  {o.items.length} item{o.items.length > 1 ? 's' : ''}
-                </span>
-                <span className="font-semibold" style={{ color: PURPLE }}>{formatINR(o.total)}</span>
-              </div>
-
-              {o.courier?.trackingId && (
-                <div className="flex items-center gap-1.5 text-[11px] mt-2" style={{ color: INK_SOFT }}>
-                  <Truck size={11} strokeWidth={1.5} style={{ color: PEACH }} />
-                  {o.courier.partner} · {o.courier.trackingId}
+                    );
+                  })}
                 </div>
-              )}
 
-              <p className="text-[11px] mt-1.5" style={{ color: INK_SOFT, opacity: 0.8 }}>
-                {new Date(o.createdAt).toLocaleDateString('en-IN', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric'
-                })}
-              </p>
-            </div>
-          );
-        })}
+                <div className="flex items-center justify-between text-sm pt-3.5" style={{ borderTop: `1px solid ${LINE}` }}>
+                  <span style={{ color: INK_SOFT }}>
+                    {o.items.length} item{o.items.length > 1 ? 's' : ''}
+                  </span>
+                  <span className="font-semibold" style={{ color: PURPLE }}>{formatINR(o.total)}</span>
+                </div>
+
+                {o.courier?.trackingId && (
+                  <div className="flex items-center gap-1.5 text-[11px] mt-2" style={{ color: INK_SOFT }}>
+                    <Truck size={11} strokeWidth={1.5} style={{ color: PEACH }} />
+                    {o.courier.partner} · {o.courier.trackingId}
+                  </div>
+                )}
+
+                <p className="text-[11px] mt-1.5" style={{ color: INK_SOFT, opacity: 0.8 }}>
+                  {new Date(o.createdAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

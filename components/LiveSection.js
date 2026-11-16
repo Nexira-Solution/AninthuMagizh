@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { getYouTubeId } from '@/lib/youtube';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const PURPLE = '#4B087A';     // royal purple: heading, active tab, status text
-const INK = '#24052F';        // deep purple for text
-const INK_FAINT = '#6E5A7C';  // muted purple-grey for secondary text
-const GOLD = '#F7B900';       // premium details
-const LINE = '#D9B4E8';       // soft lavender borders
-const PAPER = '#FFF5E8';      // ivory background
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';     // crimson: heading, active tab, status text
+const INK = '#29211E';         // text
+const INK_FAINT = '#7A6A63';   // muted secondary text (derived from text)
+const GOLD = '#C58A08';        // secondary: underline on the active tab
+const LINE = '#E5CDD3';        // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';       // background
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 const TABS = [
@@ -41,7 +41,7 @@ export default function LiveSection({ streams }) {
     <section className="max-w-4xl mx-auto px-4 py-14">
       <h2
         className="text-xl sm:text-2xl font-bold tracking-[3px] uppercase mb-6 text-center"
-        style={{ color: PURPLE, fontFamily: FONT_SANS }}
+        style={{ color: PRIMARY, fontFamily: FONT_SANS }}
       >
         Watch Live
       </h2>
@@ -58,9 +58,9 @@ export default function LiveSection({ streams }) {
               className="px-4 py-2 text-[12px] font-bold tracking-[2px] uppercase transition-colors disabled:opacity-40"
               style={{
                 fontFamily: FONT_SANS,
-                background: isActive ? PURPLE : PAPER,
+                background: isActive ? PRIMARY : PAPER,
                 color: isActive ? PAPER : INK,
-                border: `1px solid ${isActive ? PURPLE : LINE}`,
+                border: `1px solid ${isActive ? PRIMARY : LINE}`,
                 // gold underline marks the selected day
                 boxShadow: isActive ? `inset 0 -3px 0 ${GOLD}` : 'none',
               }}
@@ -85,7 +85,7 @@ export default function LiveSection({ streams }) {
             />
           </div>
           <p className="mt-3 text-center text-sm" style={{ fontFamily: FONT_SANS, color: INK }}>
-            <span className="font-bold" style={{ color: PURPLE }}>{current.hint}</span>
+            <span className="font-bold" style={{ color: PRIMARY }}>{current.hint}</span>
             {current.title && <span style={{ color: INK_FAINT }}> · {current.title}</span>}
           </p>
         </div>

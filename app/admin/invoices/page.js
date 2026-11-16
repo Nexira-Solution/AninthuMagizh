@@ -3,11 +3,14 @@ import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, Printer, Search, X, ArrowLeft, Minus } from 'lucide-react';
 
 // brand palette (same as AdminShell)
-const INK = '#24052F', SOFT = '#6E5A7C', PURPLE = '#4B087A', GOLD = '#F7B900', LINE = '#D9B4E8', WASH = '#F6EAF9';
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E', SOFT = '#8A7A70', PRIMARY = '#8F1538', GOLD = '#C58A08', LINE = '#E8D5C4', WASH = '#F6EADB';
+const ACCENT = '#E60062';   // errors, delete, out of stock
+const SUCCESS = '#075447';  // success messages
 
 const money = (n) => '₹' + (Number(n) || 0).toLocaleString('en-IN');
 const date = (d) => new Date(d).toLocaleDateString('en-IN');
-const inp = 'w-full min-w-0 rounded border bg-white px-3 py-2.5 text-sm outline-none focus:border-[#4B087A]';
+const inp = 'w-full min-w-0 rounded border bg-white px-3 py-2.5 text-sm outline-none focus:border-[#8F1538]';
 const btnMain = 'rounded px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50';
 const btnGhost = 'inline-flex items-center gap-1.5 rounded border bg-white px-3 py-2 text-sm';
 
@@ -71,14 +74,14 @@ export default function AdminInvoicesPage() {
       <style>{`@media print{body *{visibility:hidden}#invoice,#invoice *{visibility:visible}#invoice{position:absolute;left:0;top:0;width:100%;border:0!important}.no-print{display:none!important}}`}</style>
 
       <div className="no-print mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold sm:text-2xl" style={{ color: INK }}>Invoices</h1>
-        <button onClick={openNew} className={`${btnMain} inline-flex items-center gap-1.5`} style={{ background: PURPLE }}>
+        <h1 className="text-xl font-semibold sm:text-2xl" style={{ color: PRIMARY }}>Invoices</h1>
+        <button onClick={openNew} className={`${btnMain} inline-flex items-center gap-1.5`} style={{ background: PRIMARY }}>
           <Plus size={16} /> New invoice
         </button>
       </div>
 
       {msg && (
-        <p className={`no-print mb-3 rounded border bg-white p-2 text-sm ${msg.type === 'ok' ? 'border-green-300 text-green-700' : 'border-red-300 text-red-600'}`}>
+        <p className={`no-print mb-3 rounded border bg-white p-2 text-sm ${msg.type === 'ok' ? 'border-[#075447] text-[#075447]' : 'border-[#E60062] text-[#E60062]'}`}>
           {msg.text}
         </p>
       )}
@@ -89,7 +92,7 @@ export default function AdminInvoicesPage() {
           <div className="mb-3 grid grid-cols-2 rounded-lg border bg-white p-1 text-sm" style={{ borderColor: LINE }}>
             {[['invoices', `Invoices (${invoices.length})`], ['orders', `From orders (${orders.length})`]].map(([k, label]) => (
               <button key={k} onClick={() => setTab(k)} className="rounded py-2"
-                style={tab === k ? { background: PURPLE, color: '#fff' } : { color: SOFT }}>{label}</button>
+                style={tab === k ? { background: PRIMARY, color: '#fff' } : { color: SOFT }}>{label}</button>
             ))}
           </div>
 
@@ -97,7 +100,7 @@ export default function AdminInvoicesPage() {
             {tab === 'invoices' && invoices.map((inv) => (
               <button key={inv._id} onClick={() => { setSelected(inv); setMode('view'); }}
                 className="flex w-full items-center justify-between gap-2 rounded-lg border bg-white p-3 text-left"
-                style={{ borderColor: selected?._id === inv._id ? PURPLE : LINE }}>
+                style={{ borderColor: selected?._id === inv._id ? PRIMARY : LINE }}>
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium">{inv.invoiceNumber}</span>
                   <span className="block truncate text-xs" style={{ color: SOFT }}>{inv.customer?.name || '—'} · {date(inv.createdAt)}</span>
@@ -117,7 +120,7 @@ export default function AdminInvoicesPage() {
                   {o.customer?.name || '—'} · {date(o.createdAt)} · {o.paymentMethod?.toUpperCase()} / {o.paymentStatus}
                 </p>
                 <button onClick={() => fromOrder(o)} disabled={busyId === o._id}
-                  className={`${btnMain} mt-2 w-full`} style={{ background: PURPLE }}>
+                  className={`${btnMain} mt-2 w-full`} style={{ background: PRIMARY }}>
                   {busyId === o._id ? 'Generating…' : 'Generate invoice'}
                 </button>
               </div>
@@ -129,7 +132,7 @@ export default function AdminInvoicesPage() {
         {/* DETAIL / FORM */}
         <div className={`min-w-0 ${detailOpen ? '' : 'hidden lg:block'}`}>
           {detailOpen && (
-            <button onClick={back} className="no-print mb-3 inline-flex items-center gap-1.5 text-sm lg:hidden" style={{ color: PURPLE }}>
+            <button onClick={back} className="no-print mb-3 inline-flex items-center gap-1.5 text-sm lg:hidden" style={{ color: PRIMARY }}>
               <ArrowLeft size={16} /> Back to list
             </button>
           )}
@@ -158,13 +161,13 @@ function InvoiceView({ inv, onEdit, onVoid }) {
       <div className="no-print mb-2 flex flex-wrap gap-2">
         <button onClick={() => window.print()} className={btnGhost} style={{ borderColor: LINE }}><Printer size={15} /> Print / PDF</button>
         <button onClick={onEdit} className={btnGhost} style={{ borderColor: LINE }}><Pencil size={15} /> Edit</button>
-        <button onClick={onVoid} className={`${btnGhost} text-red-600`} style={{ borderColor: LINE }}><Trash2 size={15} /> Delete</button>
+        <button onClick={onVoid} className={`${btnGhost} text-[#E60062]`} style={{ borderColor: LINE }}><Trash2 size={15} /> Delete</button>
       </div>
 
       <div id="invoice" className="rounded-lg border bg-white p-4 text-black sm:p-8" style={{ borderColor: LINE }}>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <div>
-            <p className="text-lg font-bold" style={{ color: PURPLE }}>Purple Queen</p>
+            <p className="text-lg font-bold" style={{ color: PRIMARY }}>Aninthu Magizh</p>
             <h2 className="mt-2 text-xl font-bold">INVOICE</h2>
             <p className="break-all text-sm">{inv.invoiceNumber}</p>
             <p className="text-sm text-gray-600">{date(inv.createdAt)}</p>
@@ -332,7 +335,7 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
     <>
       <form onSubmit={save} className="no-print min-w-0 space-y-5 rounded-lg border bg-white p-3 sm:p-5" style={{ borderColor: LINE }}>
         <div className="flex items-center justify-between gap-2">
-          <h2 className="truncate text-lg font-semibold" style={{ color: INK }}>
+          <h2 className="truncate text-lg font-semibold" style={{ color: PRIMARY }}>
             {initial ? `Edit ${initial.invoiceNumber}` : 'New invoice'}
           </h2>
           <button type="button" onClick={onCancel} aria-label="Close" className="hidden lg:block" style={{ color: SOFT }}><X size={20} /></button>
@@ -369,7 +372,7 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
             <h3 className="text-sm font-semibold">Products {pieces > 0 && <span className="font-normal" style={{ color: SOFT }}>· {pieces} pcs</span>}</h3>
             {!locked && (
               <button type="button" onClick={() => setPickerOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-white" style={{ background: PURPLE }}>
+                className="inline-flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-white" style={{ background: PRIMARY }}>
                 <Plus size={16} /> Add products
               </button>
             )}
@@ -380,7 +383,7 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
               const max = maxOf(l);
               const over = !locked && Number(l.qty) > max;
               return (
-                <div key={idx} className="rounded border p-3" style={{ borderColor: over ? '#dc2626' : LINE }}>
+                <div key={idx} className="rounded border p-3" style={{ borderColor: over ? ACCENT : LINE }}>
                   <div className="flex items-start justify-between gap-3">
                     <Thumb src={l.image} size={56} />
                     <div className="min-w-0 flex-1">
@@ -391,7 +394,7 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
                       </p>
                     </div>
                     {!locked && (
-                      <button type="button" onClick={() => remove(idx)} aria-label="Remove" className="shrink-0 p-1 text-red-500"><Trash2 size={18} /></button>
+                      <button type="button" onClick={() => remove(idx)} aria-label="Remove" className="shrink-0 p-1 text-[#E60062]"><Trash2 size={18} /></button>
                     )}
                   </div>
 
@@ -409,7 +412,7 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
                     </div>
                   )}
                   {!locked && l.stock != null && (
-                    <p className="mt-1 text-xs" style={{ color: over ? '#dc2626' : SOFT }}>
+                    <p className="mt-1 text-xs" style={{ color: over ? ACCENT : SOFT }}>
                       {over ? `Only ${max} available` : `Available: ${max === Infinity ? '—' : max}`}
                     </p>
                   )}
@@ -437,15 +440,15 @@ function InvoiceForm({ initial, onSaved, onCancel }) {
           <textarea className={`${inp} sm:col-span-2`} style={{ borderColor: LINE }} rows={2} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </section>
 
-        {err && <p className="rounded border border-red-300 p-2 text-sm text-red-600">{err}</p>}
+        {err && <p className="rounded border border-[#E60062] p-2 text-sm text-[#E60062]">{err}</p>}
 
         {/* sticky action bar (always reachable on phones) */}
         <div className="sticky bottom-0 -mx-3 flex flex-wrap items-center gap-3 border-t bg-white px-3 py-3 sm:-mx-5 sm:px-5" style={{ borderColor: LINE }}>
           <div className="min-w-0">
             <p className="text-xs" style={{ color: SOFT }}>Total</p>
-            <p className="text-lg font-bold leading-tight">{money(total)}</p>
+            <p className="text-lg font-bold leading-tight" style={{ color: PRIMARY }}>{money(total)}</p>
           </div>
-          <button disabled={saving} className={`${btnMain} ml-auto`} style={{ background: PURPLE, boxShadow: `inset 0 -2px 0 ${GOLD}` }}>
+          <button disabled={saving} className={`${btnMain} ml-auto`} style={{ background: PRIMARY, boxShadow: `inset 0 -2px 0 ${GOLD}` }}>
             {saving ? 'Saving…' : initial ? 'Save changes' : 'Create invoice'}
           </button>
           <button type="button" onClick={onCancel} className={btnGhost} style={{ borderColor: LINE }}>Cancel</button>
@@ -529,10 +532,10 @@ function ProductPicker({ onAdd, onClose }) {
         {/* header */}
         <div className="flex items-center gap-2 border-b px-3 py-3" style={{ borderColor: LINE }}>
           {active ? (
-            <button onClick={() => setActive(null)} className="p-1" aria-label="Back" style={{ color: PURPLE }}><ArrowLeft size={20} /></button>
+            <button onClick={() => setActive(null)} className="p-1" aria-label="Back" style={{ color: PRIMARY }}><ArrowLeft size={20} /></button>
           ) : null}
-          <h3 className="min-w-0 flex-1 truncate font-semibold" style={{ color: INK }}>{active ? active.name : 'Select products'}</h3>
-          <button onClick={onClose} className="rounded px-3 py-1.5 text-sm font-medium text-white" style={{ background: PURPLE }}>
+          <h3 className="min-w-0 flex-1 truncate font-semibold" style={{ color: PRIMARY }}>{active ? active.name : 'Select products'}</h3>
+          <button onClick={onClose} className="rounded px-3 py-1.5 text-sm font-medium text-white" style={{ background: PRIMARY }}>
             Done{added > 0 && ` (${added})`}
           </button>
         </div>
@@ -549,7 +552,7 @@ function ProductPicker({ onAdd, onClose }) {
                 {[{ _id: '', name: 'All' }, ...cats].map((c) => (
                   <button key={c._id || 'all'} onClick={() => setCat(c._id)}
                     className="shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium"
-                    style={cat === c._id ? { background: PURPLE, color: '#fff', borderColor: PURPLE } : { borderColor: LINE, color: SOFT }}>
+                    style={cat === c._id ? { background: PRIMARY, color: '#fff', borderColor: PRIMARY } : { borderColor: LINE, color: SOFT }}>
                     {c.name}
                   </button>
                 ))}
@@ -572,8 +575,8 @@ function ProductPicker({ onAdd, onClose }) {
                       </span>
                     </span>
                     <span className="shrink-0 text-right">
-                      <span className="block text-sm font-semibold">{money(p.price)}</span>
-                      <span className="block text-xs" style={{ color: st === 0 ? '#dc2626' : SOFT }}>{st === 0 ? 'Out of stock' : `${st} in stock`}</span>
+                      <span className="block text-sm font-semibold" style={{ color: PRIMARY }}>{money(p.price)}</span>
+                      <span className="block text-xs" style={{ color: st === 0 ? ACCENT : SOFT }}>{st === 0 ? 'Out of stock' : `${st} in stock`}</span>
                     </span>
                   </button>
                 );
@@ -604,7 +607,7 @@ function ProductPicker({ onAdd, onClose }) {
 
               <div>
                 <p className="mb-1.5 text-sm font-medium">
-                  Choose color: <span style={{ color: PURPLE }}>{color || 'Standard'}</span>
+                  Choose color: <span style={{ color: PRIMARY }}>{color || 'Standard'}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {active.variants.map((v) => {
@@ -614,14 +617,14 @@ function ProductPicker({ onAdd, onClose }) {
                     return (
                       <button key={v.color} type="button" onClick={() => setColor(v.color)}
                         className="relative flex items-center gap-2 rounded-lg border p-1.5 pr-3 text-left"
-                        style={{ borderColor: on ? PURPLE : LINE, boxShadow: on ? `0 0 0 1px ${PURPLE}` : 'none', opacity: st === 0 ? 0.5 : 1 }}>
+                        style={{ borderColor: on ? PRIMARY : LINE, boxShadow: on ? `0 0 0 1px ${PRIMARY}` : 'none', opacity: st === 0 ? 0.5 : 1 }}>
                         <Thumb src={v.image || active.image} size={40} />
                         <span>
                           <span className="block text-sm font-medium">{v.color || 'Standard'}</span>
-                          <span className="block text-[11px]" style={{ color: st === 0 ? '#dc2626' : SOFT }}>{st === 0 ? 'Out of stock' : `${st} in stock`}</span>
+                          <span className="block text-[11px]" style={{ color: st === 0 ? ACCENT : SOFT }}>{st === 0 ? 'Out of stock' : `${st} in stock`}</span>
                         </span>
                         {picked > 0 && (
-                          <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold text-white" style={{ background: PURPLE }}>
+                          <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold text-white" style={{ background: PRIMARY }}>
                             {picked}
                           </span>
                         )}
@@ -637,10 +640,10 @@ function ProductPicker({ onAdd, onClose }) {
                   {sizes.map((sz) => {
                     const qty = picks[`${color}|${sz.size}`]?.qty || 0;
                     return (
-                      <div key={sz.size} className="flex items-center justify-between gap-3 rounded-lg border p-3" style={{ borderColor: qty ? PURPLE : LINE, opacity: sz.stock === 0 ? 0.5 : 1 }}>
+                      <div key={sz.size} className="flex items-center justify-between gap-3 rounded-lg border p-3" style={{ borderColor: qty ? PRIMARY : LINE, opacity: sz.stock === 0 ? 0.5 : 1 }}>
                         <div>
                           <p className="text-sm font-semibold">Size {sz.size}</p>
-                          <p className="text-xs" style={{ color: sz.stock === 0 ? '#dc2626' : SOFT }}>{sz.stock === 0 ? 'Out of stock' : `${sz.stock} in stock`}</p>
+                          <p className="text-xs" style={{ color: sz.stock === 0 ? ACCENT : SOFT }}>{sz.stock === 0 ? 'Out of stock' : `${sz.stock} in stock`}</p>
                         </div>
                         <Stepper value={qty} min={0} max={sz.stock} disabled={sz.stock === 0} onChange={(v) => setQty(sz, v)} />
                       </div>
@@ -660,9 +663,9 @@ function ProductPicker({ onAdd, onClose }) {
             <div className="flex items-center gap-3 border-t p-3" style={{ borderColor: LINE }}>
               <div>
                 <p className="text-xs" style={{ color: SOFT }}>{totalPcs} pcs</p>
-                <p className="font-bold">{money(totalPcs * (Number(price) || 0))}</p>
+                <p className="font-bold" style={{ color: PRIMARY }}>{money(totalPcs * (Number(price) || 0))}</p>
               </div>
-              <button onClick={addToInvoice} disabled={totalPcs === 0} className={`${btnMain} ml-auto`} style={{ background: PURPLE }}>
+              <button onClick={addToInvoice} disabled={totalPcs === 0} className={`${btnMain} ml-auto`} style={{ background: PRIMARY }}>
                 Add to invoice
               </button>
             </div>
@@ -682,7 +685,7 @@ function Stepper({ value, onChange, max = Infinity, min = 1, disabled }) {
       <button type="button" disabled={disabled || v <= min} onClick={() => onChange(Math.max(min, v - 1))} className={btn} style={{ borderColor: LINE }} aria-label="Decrease"><Minus size={16} /></button>
       <input type="number" inputMode="numeric" min={min} value={value} disabled={disabled}
         onChange={(e) => onChange(e.target.value === '' ? '' : Math.max(min, Math.min(max, parseInt(e.target.value) || 0)))}
-        className="h-9 w-14 rounded border text-center text-sm outline-none focus:border-[#4B087A]" style={{ borderColor: LINE }} />
+        className="h-9 w-14 rounded border text-center text-sm outline-none focus:border-[#8F1538]" style={{ borderColor: LINE }} />
       <button type="button" disabled={disabled || v >= max} onClick={() => onChange(Math.min(max, v + 1))} className={btn} style={{ borderColor: LINE }} aria-label="Increase"><Plus size={16} /></button>
     </div>
   );

@@ -4,18 +4,24 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import toast from 'react-hot-toast';
 
 const WishlistContext = createContext(null);
-const STORAGE_KEY = 'lb_wishlist_v1';
+const STORAGE_KEY = 'am_wishlist_v1';
 
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const PRIMARY = '#8F1538';   // crimson: success icon
+const GOLD = '#C58A08';      // secondary: toast accent bar
+const INK = '#29211E';       // text
+const PAPER = '#FFF9F0';     // background
+const HAIRLINE = '#E5CDD3';  // soft border (derived tint of primary)
+
 const toastStyle = {
   fontSize: '13px',
   fontWeight: 600,
-  color: '#24052F',
-  background: '#FFF5E8',
+  color: INK,
+  background: PAPER,
   borderRadius: '4px',
   padding: '10px 14px',
-  boxShadow: '0 2px 12px rgba(36,5,47,0.12)',
-  borderLeft: '3px solid #F7B900',
+  boxShadow: '0 2px 12px rgba(41,33,30,0.12)',
+  borderLeft: `3px solid ${GOLD}`,
 };
 
 export function WishlistProvider({ children }) {
@@ -38,13 +44,13 @@ export function WishlistProvider({ children }) {
     setWishlist((prev) => (prev.includes(productId) ? prev : [...prev, productId]));
     toast.success('Added to wishlist', {
       style: toastStyle,
-      iconTheme: { primary: '#4B087A', secondary: '#FFF5E8' },
+      iconTheme: { primary: PRIMARY, secondary: PAPER },
     });
   }, []);
 
   const removeFromWishlist = useCallback((productId) => {
     setWishlist((prev) => prev.filter((id) => id !== productId));
-    toast('Removed from wishlist', { icon: '💔', style: { ...toastStyle, borderLeftColor: '#D9B4E8' } });
+    toast('Removed from wishlist', { icon: '💔', style: { ...toastStyle, borderLeftColor: HAIRLINE } });
   }, []);
 
   const toggleWishlist = useCallback((productId) => {

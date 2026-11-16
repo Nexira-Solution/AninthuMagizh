@@ -1,14 +1,15 @@
 'use client';
 
-// Design tokens: same royal purple / gold / ivory system as the rest of the storefront.
-// Palette: #4B087A #F7B900 #FFF5E8 #24052F #D9B4E8
-const INK = '#24052F';        // deep purple for text
-const INK_SOFT = '#6E5A7C';   // muted purple-grey for secondary text
-const PURPLE = '#4B087A';     // selected chips, low-stock notes
-const LINE = '#D9B4E8';       // soft lavender borders
-const PAPER = '#FFF5E8';      // ivory background
-const WASH = '#F6EAF9';       // image placeholder fill (light lavender tint)
-const DISABLED = '#B9A6C6';   // text on sold-out options
+// Design tokens: crimson / gold / cream system, same as the rest of the storefront.
+// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
+const INK = '#29211E';        // text
+const INK_SOFT = '#7A6A63';   // muted secondary text (derived from text)
+const PRIMARY = '#8F1538';    // selected chips
+const LOW_STOCK = '#075447';  // highlight: low-stock notes
+const LINE = '#E5CDD3';       // soft borders (derived tint of primary)
+const PAPER = '#FFF9F0';      // background
+const WASH = '#F6ECE0';       // image placeholder fill (derived from background)
+const DISABLED = '#B8ACA5';   // text on sold-out options (derived from muted text)
 
 function AddonSelector({ label, options, activeId, onChange, formatINR }) {
   if (!options?.length) return null;
@@ -25,8 +26,8 @@ function AddonSelector({ label, options, activeId, onChange, formatINR }) {
           className="h-9 px-3 text-sm font-medium transition-colors"
           style={{
             borderRadius: '4px',
-            border: `1px solid ${!activeId ? PURPLE : LINE}`,
-            background: !activeId ? PURPLE : PAPER,
+            border: `1px solid ${!activeId ? PRIMARY : LINE}`,
+            background: !activeId ? PRIMARY : PAPER,
             color: !activeId ? PAPER : INK,
           }}
         >
@@ -45,8 +46,8 @@ function AddonSelector({ label, options, activeId, onChange, formatINR }) {
               className="flex items-center gap-2 h-9 pl-1.5 pr-3 text-sm font-medium transition-colors"
               style={{
                 borderRadius: '4px',
-                border: `1px solid ${outOfStock ? LINE : isActive ? PURPLE : LINE}`,
-                background: isActive ? PURPLE : PAPER,
+                border: `1px solid ${outOfStock ? LINE : isActive ? PRIMARY : LINE}`,
+                background: isActive ? PRIMARY : PAPER,
                 color: outOfStock ? DISABLED : isActive ? PAPER : INK,
                 textDecoration: outOfStock ? 'line-through' : 'none',
                 cursor: outOfStock ? 'not-allowed' : 'pointer',
@@ -75,7 +76,7 @@ function AddonSelector({ label, options, activeId, onChange, formatINR }) {
         </div>
       )}
       {active && active.stock > 0 && active.stock <= 5 && (
-        <p className="mt-2 text-xs font-medium" style={{ color: PURPLE }}>
+        <p className="mt-2 text-xs font-medium" style={{ color: LOW_STOCK }}>
           Only {active.stock} left in stock
         </p>
       )}
@@ -194,8 +195,8 @@ export default function ColorSizeSelector({
                   className={`${showSizePrices ? 'min-w-[64px] h-[48px] px-3 flex flex-col items-center justify-center leading-tight' : 'min-w-[40px] h-[36px] px-2.5'} text-sm font-medium transition-colors`}
                   style={{
                     borderRadius: '4px',
-                    border: `1px solid ${outOfStock ? LINE : active ? PURPLE : LINE}`,
-                    background: active ? PURPLE : PAPER,
+                    border: `1px solid ${outOfStock ? LINE : active ? PRIMARY : LINE}`,
+                    background: active ? PRIMARY : PAPER,
                     color: outOfStock ? DISABLED : active ? PAPER : INK,
                     textDecoration: outOfStock ? 'line-through' : 'none',
                     cursor: outOfStock ? 'not-allowed' : 'pointer',
@@ -213,7 +214,7 @@ export default function ColorSizeSelector({
           </div>
 
           {activeSize && sizeStock(activeSize) <= 5 && sizeStock(activeSize) > 0 && (
-            <p className="mt-2.5 text-xs font-medium" style={{ color: PURPLE }}>
+            <p className="mt-2.5 text-xs font-medium" style={{ color: LOW_STOCK }}>
               Only {sizeStock(activeSize)} left in stock
             </p>
           )}
@@ -225,7 +226,7 @@ export default function ColorSizeSelector({
             <button
               type="button"
               onClick={onViewSizeChart}
-              className="mt-2.5 text-xs font-medium underline underline-offset-2"
+              className="mt-2.5 text-xs font-medium underline underline-offset-2 transition-colors hover:!text-[#E60062]"
               style={{ color: INK_SOFT }}
             >
               View size chart{sizeChartImages.length > 1 ? ` (${sizeChartImages.length})` : ''}
@@ -249,8 +250,8 @@ export default function ColorSizeSelector({
                   className="h-[36px] px-3 text-sm font-medium transition-colors"
                   style={{
                     borderRadius: '4px',
-                    border: `1px solid ${active ? PURPLE : LINE}`,
-                    background: active ? PURPLE : PAPER,
+                    border: `1px solid ${active ? PRIMARY : LINE}`,
+                    background: active ? PRIMARY : PAPER,
                     color: active ? PAPER : INK,
                     cursor: 'pointer',
                   }}
@@ -277,8 +278,8 @@ export default function ColorSizeSelector({
                   className="h-[36px] px-3 text-sm font-medium transition-colors"
                   style={{
                     borderRadius: '4px',
-                    border: `1px solid ${active ? PURPLE : LINE}`,
-                    background: active ? PURPLE : PAPER,
+                    border: `1px solid ${active ? PRIMARY : LINE}`,
+                    background: active ? PRIMARY : PAPER,
                     color: active ? PAPER : INK,
                     cursor: 'pointer',
                   }}
