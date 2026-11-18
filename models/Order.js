@@ -66,6 +66,10 @@ const OrderItemSchema = new mongoose.Schema(
     price: Number, // unit price INCLUDING pant/shawl add-ons and option extras
     // FIX: priceSource was missing, so it was dropped on save.
     priceSource: { type: String, enum: ['regular', 'discount'], default: 'regular' },
+    // Our cost for ONE unit of this line at the time of the order (snapshot, for profit
+    // reports). For a pack / combo line it is the cost of the whole pack / combo.
+    // Admin-only: never include this in customer-facing order responses.
+    costPrice: { type: Number, default: 0 },
     qty: Number
   },
   { _id: false }

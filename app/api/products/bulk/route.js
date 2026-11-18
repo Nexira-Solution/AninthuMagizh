@@ -14,6 +14,8 @@ import { NO_SIZE } from '@/lib/noSize';
 // POST /api/products/bulk
 // body: {
 //   category, skuPrefix, description, fabric,
+//   weight,                         // grams per piece
+//   costPrice,                      // ₹ per piece (admin-only, used by profit reports)
 //   price, compareAtPrice, sizes: [{ size, stock, price? }],
 //   stockMode: 'size' | 'common',   // optional, default 'size'
 //   commonStock: number,            // the shared pool, used only when stockMode = 'common'
@@ -36,7 +38,7 @@ import { NO_SIZE } from '@/lib/noSize';
 //                 stock is stored as 0. Only valid for categories that have sizes.
 // - If the category has NO sizes (hasSizes === false), the products get a single
 //   hidden "One Size" entry that carries the stock / price (always 'size' mode).
-// - isReadyToShip / sizeChart / optionGroups / sleeveOptions / zipOptions / free shipping / discount
+// - isReadyToShip / sizeChart / optionGroups / sleeveOptions / zipOptions / free shipping / discount / costPrice
 //   apply to every product in the batch.
 export const POST = requireAdmin(async (req) => {
   try {
@@ -49,6 +51,7 @@ export const POST = requireAdmin(async (req) => {
       description = '',
       fabric = '',
       weight = 0,
+      costPrice = 0,
       price,
       compareAtPrice = 0,
       sizes = [],
@@ -225,6 +228,7 @@ export const POST = requireAdmin(async (req) => {
           category: cat._id,
           fabric,
           weight: Math.max(0, Number(weight) || 0), // grams per piece
+          costPrice: Math.max(0, Number(costPrice) || 0), // ₹ per piece, admin-only
           tags,
           variants: [variant],
           // lowest of the default price and every per-size price

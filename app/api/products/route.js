@@ -41,6 +41,7 @@ function sanitizeVariantStock(variants) {
 // GET /api/products?category=slug&size=M&minPrice=0&maxPrice=2000&sort=newest&page=1&limit=20&flag=bestseller
 // Pass limit=all to skip pagination entirely and return every matching product.
 // flag=discount returns only products whose discount is live right now.
+// PUBLIC route: costPrice is excluded so customers can never see your costs.
 export async function GET(req) {
   try {
     await dbConnect();
@@ -110,6 +111,7 @@ export async function GET(req) {
 
     // sizeChart kept in the populate so quick-view can use the category fallback.
     let productsQuery = Product.find(query)
+      .select('-costPrice') // admin-only field, never expose publicly
       .populate('category', 'name slug type sizeChart')
       .sort(sortMap[sort] || sortMap.newest)
       .lean(); // plain objects: much faster than hydrating Mongoose documents
@@ -172,7 +174,8 @@ export const POST = requireAdmin(async (req) => {
       : body.basePrice || 0;
 
     const weight = Math.max(0, Number(body.weight) || 0); // grams, manual entry
-    const product = await Product.create({ ...body, slug, sku, basePrice, weight });
+    const costPrice = Math.max(0, Number(body.costPrice) || 0); // ₹ per piece, admin-only
+    const product = await Product.create({ ...body, slug, sku, basePrice, weight, costPrice });
 
     revalidateTag('products');
     revalidatePath('/');

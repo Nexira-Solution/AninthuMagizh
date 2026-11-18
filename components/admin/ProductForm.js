@@ -319,7 +319,7 @@ export default function ProductForm({ initial, productId }) {
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(() => {
     const base = initial || {
-      name: '', slug: '', sku: '', description: '', category: '', fabric: '', tags: [], weight: '',
+      name: '', slug: '', sku: '', description: '', category: '', fabric: '', tags: [], weight: '', costPrice: '',
       variants: [emptyVariant()],
       sizeChart: [],
       optionGroups: [],
@@ -333,6 +333,7 @@ export default function ProductForm({ initial, productId }) {
     return {
       ...base,
       weight: base.weight > 0 ? base.weight : '',
+      costPrice: base.costPrice > 0 ? base.costPrice : '',
       variants: normalizeVariants(base.variants),
       sizeChart: normalizeSizeChart(base.sizeChart),
       optionGroups: buildInitialOptionGroups(base),
@@ -568,6 +569,7 @@ export default function ProductForm({ initial, productId }) {
     const payload = {
       ...form,
       weight: Math.max(0, Number(form.weight) || 0), // grams, manual entry
+      costPrice: Math.max(0, Number(form.costPrice) || 0), // ₹ per piece, admin-only
       sizeChart: form.sizeChart || [],
       // Sleeve / zip are now regular option groups; clear the legacy fields so
       // the product page doesn't show them twice.
@@ -743,6 +745,32 @@ export default function ProductForm({ initial, productId }) {
               onFocus={(e) => (e.target.style.borderColor = ACCENT)}
               onBlur={(e) => (e.target.style.borderColor = LINE)}
             />
+          </div>
+          <div>
+            <label style={labelStyle}>Cost Price ₹ (one piece, admin only)</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 600 (what one piece costs you)"
+              style={inputStyle}
+              value={form.costPrice ?? ''}
+              onChange={(e) => update('costPrice', e.target.value)}
+              onFocus={(e) => (e.target.style.borderColor = ACCENT)}
+              onBlur={(e) => (e.target.style.borderColor = LINE)}
+            />
+            {Number(form.costPrice) > 0 && previewBasePrice > 0 ? (
+              <p style={{ fontSize: '11px', color: INK_SOFT, fontFamily: 'sans-serif', marginTop: '4px' }}>
+                Margin at lowest price ({formatINR(previewBasePrice)}):{' '}
+                <b style={{ color: previewBasePrice - Number(form.costPrice) >= 0 ? HIGHLIGHT : PRIMARY }}>
+                  {formatINR(previewBasePrice - Number(form.costPrice))}
+                </b>
+              </p>
+            ) : (
+              <p style={{ fontSize: '11px', color: INK_SOFT, fontFamily: 'sans-serif', marginTop: '4px' }}>
+                Never shown to customers. Used for Sales &amp; Profit reports.
+              </p>
+            )}
           </div>
           <div className="sm:col-span-2">
             <label style={labelStyle}>Description</label>
@@ -1238,6 +1266,15 @@ export default function ProductForm({ initial, productId }) {
               <p style={{ fontSize: '13px', color: INK, fontFamily: 'sans-serif', marginTop: '12px' }}>
                 Lowest price: {formatINR(previewBasePrice)} →{' '}
                 <b style={{ color: HIGHLIGHT }}>{formatINR(discountPreview)}</b> in the Discounts section
+                {Number(form.costPrice) > 0 && (
+                  <>
+                    {' '}(margin{' '}
+                    <b style={{ color: discountPreview - Number(form.costPrice) >= 0 ? HIGHLIGHT : PRIMARY }}>
+                      {formatINR(discountPreview - Number(form.costPrice))}
+                    </b>
+                    )
+                  </>
+                )}
               </p>
             )}
             <p style={{ fontSize: '11px', color: INK_SOFT, fontFamily: 'sans-serif', marginTop: '6px' }}>

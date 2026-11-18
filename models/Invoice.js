@@ -18,6 +18,8 @@ const InvoiceSchema = new mongoose.Schema(
         variantId: String,
         name: String, sku: String, image: String, color: String, size: String,
         qty: Number, price: Number, details: String,
+        // NEW: unit cost snapshot so profit reports stay accurate when cost prices change later
+        costPrice: { type: Number, default: 0 },
       },
     ],
     subtotal: Number,

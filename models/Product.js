@@ -109,6 +109,11 @@ const ProductSchema = new mongoose.Schema(
     // Manual shipping weight of ONE piece, in grams. 0 = not set.
     weight: { type: Number, default: 0, min: 0 },
 
+    // What ONE piece costs the store (purchase / making cost). Used only by the
+    // admin Sales & Profit reports. NEVER send this to the storefront.
+    // 0 = not set.
+    costPrice: { type: Number, default: 0, min: 0 },
+
     // Free shipping for this product (see lib/freeShipping.js).
     //   freeShipping = true             -> free in every state
     //   freeShippingStates = ['Kerala'] -> free only when delivering to these states

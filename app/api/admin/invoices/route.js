@@ -5,9 +5,11 @@ import Product from '@/models/Product';
 import Combo from '@/models/Combo';
 import Order from '@/models/Order';
 import Invoice from '@/models/Invoice';
+import { requireAdmin } from '@/lib/apiAuth';
 import { buildOps, applyOps, rollbackOps } from '@/lib/stockDeduct';
 
-// TODO: add your admin session check at the top of GET / POST / PUT / DELETE.
+// Every handler below is wrapped in requireAdmin (same as the other admin routes),
+// so invoices, orders and stock can no longer be read or changed without an admin session.
 
 const json = (data, status = 200) => NextResponse.json(data, { status });
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -90,7 +92,7 @@ function checkItems(items) {
   return null;
 }
 
-// turn client lines into trusted lines (name/sku taken from the DB)
+// turn client lines into trusted lines (name/sku/cost taken from the DB)
 async function manualLines(items) {
   const raw = items.map((i) => ({
     product: i.product, variantId: i.variantId || undefined, color: i.color || '', size: i.size,
@@ -102,7 +104,14 @@ async function manualLines(items) {
     const v = p?.variants?.find((x) => String(x._id) === String(l.variantId)) ||
       p?.variants?.find((x) => String(x.color || '').toLowerCase().trim() === String(l.color).toLowerCase().trim());
     const image = imgOf(v?.images?.[0] ?? v?.image ?? p?.images?.[0] ?? p?.image ?? p?.thumbnail);
-    return { ...l, name: p?.name || 'Unknown product', sku: p?.sku || '', image };
+    return {
+      ...l,
+      name: p?.name || 'Unknown product',
+      sku: p?.sku || '',
+      image,
+      // cost snapshot (taken from the DB, never from the client) for profit reports
+      costPrice: num(p?.costPrice),
+    };
   });
   return { lines, maps };
 }
@@ -123,11 +132,12 @@ function commonFields(b) {
 // ?products=1&q=&category=&skip=&limit=  browse products (or &ids=a,b to hydrate specific ones)
 // ?categories=1   category list
 // (none)          recent invoices
-export async function GET(req) {
+export const GET = requireAdmin(async (req) => {
   await dbConnect();
   const sp = new URL(req.url).searchParams;
 
   if (sp.get('id')) {
+    if (!mongoose.isValidObjectId(sp.get('id'))) return json({ error: 'Not found' }, 404);
     const inv = await Invoice.findById(sp.get('id')).lean();
     return inv ? json(inv) : json({ error: 'Not found' }, 404);
   }
@@ -208,19 +218,20 @@ export async function GET(req) {
   }
 
   return json(await Invoice.find().sort({ createdAt: -1 }).limit(100).lean());
-}
+});
 
 // ───────────────────────── POST ─────────────────────────
 // { orderId }                  -> invoice from an order
 // { customer, items, ... }     -> manual invoice
-export async function POST(req) {
+export const POST = requireAdmin(async (req) => {
   await dbConnect();
   await ensureIndexes();
   const b = await req.json().catch(() => ({}));
   return b.orderId ? fromOrder(b.orderId) : createManual(b);
-}
+});
 
 async function fromOrder(orderId) {
+  if (!mongoose.isValidObjectId(orderId)) return json({ error: 'Order not found' }, 404);
   if (await Invoice.findOne({ order: orderId }).lean()) return json({ error: 'Invoice already exists' }, 409);
 
   const order = await Order.findById(orderId).lean();
@@ -249,6 +260,8 @@ async function fromOrder(orderId) {
       items: lines.map((i) => ({
         product: i.product, name: i.name, sku: i.sku, image: i.image, color: i.color, size: i.size,
         qty: i.qty, price: i.price, details: describe(i),
+        // carry the order's cost snapshot across (0 for orders placed before costPrice existed)
+        costPrice: num(i.costPrice),
       })),
       subtotal: order.subtotal,
       discount: order.discount,
@@ -298,10 +311,10 @@ async function createManual(b) {
 // ───────────────────────── PUT (edit) ─────────────────────────
 // manual invoice: everything editable, stock is adjusted
 // order invoice : customer / address / discount / shipping / payment / notes only
-export async function PUT(req) {
+export const PUT = requireAdmin(async (req) => {
   await dbConnect();
   const b = await req.json().catch(() => ({}));
-  const inv = b.id ? await Invoice.findById(b.id).lean() : null;
+  const inv = b.id && mongoose.isValidObjectId(b.id) ? await Invoice.findById(b.id).lean() : null;
   if (!inv) return json({ error: 'Invoice not found' }, 404);
 
   const f = commonFields(b);
@@ -355,13 +368,13 @@ export async function PUT(req) {
     await applyOps(oldOps).catch(() => {});
     return json({ error: 'Could not save invoice: ' + e.message }, 500);
   }
-}
+});
 
 // ───────────────────────── DELETE (void: restores stock) ─────────────────────────
-export async function DELETE(req) {
+export const DELETE = requireAdmin(async (req) => {
   await dbConnect();
   const id = new URL(req.url).searchParams.get('id');
-  const inv = id ? await Invoice.findById(id).lean() : null;
+  const inv = id && mongoose.isValidObjectId(id) ? await Invoice.findById(id).lean() : null;
   if (!inv) return json({ error: 'Invoice not found' }, 404);
 
   let lines = inv.items;
@@ -387,4 +400,4 @@ export async function DELETE(req) {
     return json({ error: 'Could not delete invoice' }, 500);
   }
   return json({ ok: true });
-}
+});

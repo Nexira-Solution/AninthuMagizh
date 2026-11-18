@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutDashboard, Package, ListTree, ShoppingCart, Boxes, Image as ImageIcon, Sparkles, BellRing,
+  LayoutDashboard, Package, ListTree, ShoppingCart, Boxes, Image as ImageIcon, Sparkles, BellRing,ShoppingBag,Wallet,CalendarCheck,
   Clapperboard, Star, Ticket, Layers, FileBarChart, Settings as SettingsIcon, Menu, X, LogOut, Percent,
   Receipt
 } from 'lucide-react';
@@ -26,15 +26,13 @@ const NAV = [
   { href: '/admin/categories', label: 'Categories',      icon: ListTree },
   { href: '/admin/orders',     label: 'Orders',          icon: ShoppingCart },
   { href: '/admin/invoices',   label: 'Invoices',        icon: Receipt },
+  { href: '/admin/purchases',  label: 'Purchases',       icon: ShoppingBag },
+  { href: '/admin/expenses',   label: 'Expenses',        icon: Wallet },
+  { href: '/admin/attendance', label: 'Attendance',      icon: CalendarCheck },
   { href: '/admin/inventory',  label: 'Inventory',       icon: Boxes },
   { href: '/admin/notify',     label: 'Notify Requests', icon: BellRing },
-  // { href: '/admin/combos',     label: 'Combo Offers',    icon: Layers },
   { href: '/admin/banners',    label: 'Banners',         icon: ImageIcon },
-  // { href: '/admin/reels',      label: 'Shop by Reels',   icon: Clapperboard },
-  // { href: '/admin/reviews',    label: 'Reviews',         icon: Star },
-  // { href: '/admin/coupons',    label: 'Coupons',         icon: Ticket },
-  { href: '/admin/reports',    label: 'Sales Reports',   icon: FileBarChart },
-  // { href: '/admin/cofounder',  label: 'AI Cofounder',    icon: Sparkles },
+  { href: '/admin/reports',    label: 'Sales & Profit',  icon: FileBarChart },
   { href: '/admin/settings',   label: 'Settings',        icon: SettingsIcon },
 ];
 

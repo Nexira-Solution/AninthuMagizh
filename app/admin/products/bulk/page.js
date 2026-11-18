@@ -20,6 +20,7 @@ export default function BulkAddProductsPage() {
   const [description, setDescription] = useState('');
   const [fabric, setFabric] = useState('');
   const [weight, setWeight] = useState(''); // grams, one piece — applied to every product in the batch
+  const [costPrice, setCostPrice] = useState(''); // ₹ per piece (admin only) — applied to every product in the batch
   const [price, setPrice] = useState('');
   const [compareAtPrice, setCompareAtPrice] = useState('');
   const [stockBySize, setStockBySize] = useState({}); // { S: 10, M: 10, ... }
@@ -281,6 +282,7 @@ export default function BulkAddProductsPage() {
           description,
           fabric,
           weight: Math.max(0, Number(weight) || 0),
+          costPrice: Math.max(0, Number(costPrice) || 0), // ₹ per piece, admin-only
           price: Number(price),
           compareAtPrice: Number(compareAtPrice) || 0,
           sizes,
@@ -491,7 +493,7 @@ export default function BulkAddProductsPage() {
           />
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Fabric</label>
             <input
@@ -511,6 +513,24 @@ export default function BulkAddProductsPage() {
               className="w-full px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
             />
             <p className="text-xs text-brand-ink/40 mt-1">Applied to every product in this batch. Used for shipping.</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Cost price ₹ (one piece)</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={costPrice}
+              onChange={(e) => setCostPrice(e.target.value)}
+              placeholder="e.g. 600"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
+            />
+            <p className="text-xs text-brand-ink/40 mt-1">
+              Admin only. Applied to every product in this batch. Used for profit reports.
+              {Number(costPrice) > 0 && Number(price) > 0
+                ? ` Margin at default price: ${formatINR(Number(price) - Number(costPrice))}.`
+                : ''}
+            </p>
           </div>
         </div>
 

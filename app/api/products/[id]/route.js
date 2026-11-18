@@ -38,6 +38,7 @@ function sanitizeVariantStock(variants) {
 
 // Admin read (?admin=1): always fresh, includes inactive products, and the
 // category stays a plain id so the edit form can post it back safely.
+// costPrice IS included here (admin only), so the edit form can show and re-save it.
 const adminGet = requireAdmin(async (req, { params }) => {
   const { id } = await params;
   await dbConnect();
@@ -56,6 +57,7 @@ export async function GET(req, ctx) {
 
   // Same cached function the product page uses (includes the category
   // sizeChart fallback, isActive / isApproved filters, parallel queries).
+  // NOTE: getProductPageData in lib/products must NOT return costPrice.
   const data = await getProductPageData(id);
   if (!data) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
@@ -78,6 +80,10 @@ export const PUT = requireAdmin(async (req, { params }) => {
   // Weight is entered manually in grams; never allow negatives (updates skip schema validators)
   if ('weight' in body) body.weight = Math.max(0, Number(body.weight) || 0);
 
+  // Cost price (₹ per piece, admin-only). Only touched when the request sends it,
+  // so partial updates (e.g. the inventory page saving stock) never wipe it.
+  if ('costPrice' in body) body.costPrice = Math.max(0, Number(body.costPrice) || 0);
+
   // Clean freeShipping / freeShippingStates (updates skip schema validators)
   sanitizeFreeShipping(body);
 
@@ -98,8 +104,8 @@ export const PUT = requireAdmin(async (req, { params }) => {
 
   // Persists whatever is on body (sizeChart / isReadyToShip / sleeveOptions /
   // zipOptions / optionGroups / pantOptions / shawlOptions / freeShipping /
-  // freeShippingStates / discount / variants[].stockMode / variants[].commonStock)
-  // as long as the schema defines them.
+  // freeShippingStates / discount / weight / costPrice / variants[].stockMode /
+  // variants[].commonStock) as long as the schema defines them.
   const product = await Product.findOneAndUpdate(getFilter(id), body, { new: true });
   if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
