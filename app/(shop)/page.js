@@ -37,7 +37,7 @@ const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const NEW_LIMIT = 8;
 const BEST_LIMIT = 5;
-const FEATURED_LIMIT = 6;
+const FEATURED_LIMIT = 4;
 const DISCOUNT_LIMIT = 4;
 const REELS_LIMIT = 10;
 const CATEGORY_LIMIT = 24;
@@ -54,16 +54,25 @@ const TRUST = [
 
 const LIVE_PRODUCT = { isActive: true, isActiveSeller: true };
 
+// Best sellers "arc": on desktop the order is 4-2-1-3-5 and each step outward drops lower,
+// so #1 sits highest in the centre. On mobile #1 is full width, the rest follow in a 2-col grid.
+const ARC = [
+  'col-span-2 lg:col-span-1 lg:order-3',
+  'lg:order-2 lg:mt-10',
+  'lg:order-4 lg:mt-10',
+  'lg:order-1 lg:mt-20',
+  'lg:order-5 lg:mt-20',
+];
+
 async function getData() {
   await dbConnect();
-  const [banners, newArrivals, bestSellers, featured, discountProducts, reviews, combos, categories, reels, settings] =
+  let [banners, newArrivals, bestSellers, featured, discountProducts, reviews, combos, categories, reels, settings] =
     await Promise.all([
       Banner.find({ isActive: true }).sort({ sortOrder: 1 }).lean(),
       // New arrivals: newest first
       Product.find(LIVE_PRODUCT).select('-costPrice').sort({ createdAt: -1 }).limit(NEW_LIMIT).lean(),
-      // Best sellers: highest sales first. Change `soldCount` to whatever your Product schema calls it
-      // (e.g. salesCount, totalSold, ordersCount). If the field doesn't exist this falls back to newest.
-      Product.find(LIVE_PRODUCT).select('-costPrice').sort({ soldCount: -1, createdAt: -1 }).limit(BEST_LIMIT).lean(),
+      // Best sellers: products flagged isBestSeller (same flag as /api/products?flag=bestseller), top sales first
+      Product.find({ ...LIVE_PRODUCT, isBestSeller: true }).select('-costPrice').sort({ soldCount: -1, createdAt: -1 }).limit(BEST_LIMIT).lean(),
       // Featured collection: products flagged isFeatured in admin
       Product.find({ ...LIVE_PRODUCT, isFeatured: true }).select('-costPrice').sort({ updatedAt: -1 }).limit(FEATURED_LIMIT).lean(),
       Product.find({ isActive: true, ...liveDiscountQuery() }).select('-costPrice').sort({ createdAt: -1 }).limit(DISCOUNT_LIMIT).lean(),
@@ -73,6 +82,16 @@ async function getData() {
       Reel.find({ isActive: true }).sort({ createdAt: -1 }).populate('product', 'name slug').limit(REELS_LIMIT).lean(),
       Settings.findOne({ key: 'global' }).select('liveStreams').lean(),
     ]);
+  // Not enough flagged best sellers? Top up with the highest soldCount so the arc is always full.
+  if (bestSellers.length < BEST_LIMIT) {
+    const have = bestSellers.map((p) => p._id);
+    const extra = await Product.find({ ...LIVE_PRODUCT, _id: { $nin: have } })
+      .select('-costPrice')
+      .sort({ soldCount: -1, createdAt: -1 })
+      .limit(BEST_LIMIT - bestSellers.length)
+      .lean();
+    bestSellers = [...bestSellers, ...extra];
+  }
   return JSON.parse(
     JSON.stringify({
       banners,
@@ -204,7 +223,6 @@ export default async function HomePage() {
 
   // If nothing is flagged isFeatured yet, fall back to the next-newest products so the section never looks empty
   const featured = featuredRaw?.length ? featuredRaw : newArrivals.slice(0, FEATURED_LIMIT);
-  const [spotlight, ...restBest] = bestSellers;
 
   return (
     <div className="overflow-x-hidden" style={{ background: PAPER }}>
@@ -236,86 +254,74 @@ export default async function HomePage() {
       {/* 4. Categories: bento mosaic ('bento' | 'arch' | 'grid') */}
       <CategoryShowcase categories={plainCategories} layout="bento" />
 
-      {/* 5. NEW ARRIVALS: full-bleed swipe rail with a big serif lead-in.
-             Layout: heading row on top, then a horizontally scrolling strip that bleeds off the right edge. */}
+      {/* 5. NEW ARRIVALS: crimson band with the products floating over its lower edge.
+             Mobile: swipe strip. Desktop: 4-column grid. */}
       {newArrivals.length > 0 && (
-        <section className="pt-16 sm:pt-20 pb-6">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8 sm:mb-10">
+        <section className="mt-16 sm:mt-20">
+          <div style={{ background: PRIMARY }}>
+            <div className="max-w-6xl mx-auto px-4 pt-14 sm:pt-20 pb-28 sm:pb-36 flex flex-col sm:flex-row sm:items-end justify-between gap-5">
               <div>
                 <GoldRule />
-                <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                <h2 className="mt-4 text-[32px] sm:text-[52px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
                   New arrivals
                 </h2>
-                <p className="mt-3 text-[14px] font-light max-w-[42ch] leading-[1.8]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
-                  Just off the Tirupur looms. Swipe through this week’s newest pieces.
+                <p className="mt-3 text-[14px] font-light max-w-[44ch] leading-[1.8]" style={{ color: 'rgba(255,249,240,0.75)', fontFamily: FONT_SANS }}>
+                  Fresh off the Tirupur looms this month.
                 </p>
               </div>
-              <Link href="/products?sort=newest" className="shrink-0 inline-flex items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>
+              <Link href="/products?flag=newarrival" className="shrink-0 inline-flex items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all" style={{ color: GOLD, fontFamily: FONT_SANS }}>
                 See everything new <ArrowRight size={14} />
               </Link>
             </div>
           </div>
-          <div className="max-w-6xl mx-auto">
-            <div className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="max-w-6xl mx-auto px-4 -mt-20 sm:-mt-28 relative">
+            <div className="flex lg:grid lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory -mx-4 px-4 lg:mx-0 lg:px-0 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {newArrivals.map((p) => (
-                <div key={p._id} className="snap-start shrink-0 w-[62%] sm:w-[34%] lg:w-[23.5%]">
+                <div
+                  key={p._id}
+                  className="snap-start shrink-0 w-[62%] sm:w-[34%] lg:w-auto p-2 bg-white"
+                  style={{ boxShadow: '0 18px 40px -18px rgba(41,33,30,0.35)' }}
+                >
                   <ProductCard product={toCardProduct(p)} />
                 </div>
               ))}
-              <div className="shrink-0 w-[1px]" aria-hidden="true" />
             </div>
           </div>
         </section>
       )}
 
-      {/* 6. BEST SELLERS: dark ranked showcase.
-             Layout: #1 is a tall spotlight on the left, ranks 2-5 sit in a 2x2 grid on the right. */}
+      {/* 6. BEST SELLERS: dark stage, products fan out in an arc with #1 highest in the centre. */}
       {bestSellers.length > 0 && (
-        <section className="my-14 sm:my-20" style={{ background: INK }}>
-          <div className="max-w-6xl mx-auto px-4 py-14 sm:py-20">
-            <div className="flex items-end justify-between gap-4 mb-8 sm:mb-12">
-              <div>
-                <GoldRule />
-                <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
-                  Best sellers
-                </h2>
-                <p className="mt-3 text-[14px] font-light max-w-[42ch] leading-[1.8]" style={{ color: 'rgba(255,249,240,0.65)', fontFamily: FONT_SANS }}>
-                  The pieces our customers reorder the most, ranked by sales.
-                </p>
-              </div>
-              <Link href="/products?sort=best-selling" className="hidden sm:inline-flex shrink-0 items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all" style={{ color: GOLD, fontFamily: FONT_SANS }}>
-                View all best sellers <ArrowRight size={14} />
-              </Link>
+        <section className="mt-6 sm:mt-10" style={{ background: INK }}>
+          <div className="max-w-6xl mx-auto px-4 pt-14 sm:pt-20 pb-16 sm:pb-28">
+            <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+              <div className="flex justify-center"><GoldRule /></div>
+              <h2 className="mt-4 text-[32px] sm:text-[52px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                Best sellers
+              </h2>
+              <p className="mt-3 text-[14px] font-light leading-[1.8]" style={{ color: 'rgba(255,249,240,0.65)', fontFamily: FONT_SANS }}>
+                The five pieces customers love most, ranked by sales.
+              </p>
             </div>
 
-            <div className="grid lg:grid-cols-[1.05fr_1.4fr] gap-5 sm:gap-8">
-              {/* Rank 1 spotlight */}
-              {spotlight && (
-                <div className="relative p-4 sm:p-6" style={{ background: PAPER, outline: `1px solid ${GOLD}`, outlineOffset: -8 }}>
-                  <div className="flex items-baseline gap-3 mb-3 px-1">
-                    <span className="text-[56px] sm:text-[72px] leading-none" style={{ color: GOLD, fontFamily: FONT_SERIF }}>1</span>
-                    <span className="text-[12px] font-bold" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>Our top seller</span>
-                  </div>
-                  <ProductCard product={toCardProduct(spotlight)} />
-                </div>
-              )}
-
-              {/* Ranks 2-5 */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 content-start">
-                {restBest.map((p, i) => (
-                  <div key={p._id} className="p-3 sm:p-4" style={{ background: PAPER }}>
-                    <span className="block mb-2 text-[30px] sm:text-[38px] leading-none" style={{ color: GOLD, fontFamily: FONT_SERIF }}>
-                      {i + 2}
-                    </span>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-4 sm:gap-x-6 gap-y-10 items-start">
+              {bestSellers.map((p, i) => (
+                <div key={p._id} className={`relative pt-5 ${ARC[i] || ''}`}>
+                  <span
+                    className="absolute top-0 left-3 z-10 w-10 h-10 rounded-full flex items-center justify-center text-[18px]"
+                    style={{ background: i === 0 ? GOLD : PAPER, color: INK, fontFamily: FONT_SERIF, boxShadow: `0 0 0 3px ${INK}` }}
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="p-2 bg-white" style={i === 0 ? { outline: `2px solid ${GOLD}`, outlineOffset: 3 } : undefined}>
                     <ProductCard product={toCardProduct(p)} />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-8 sm:hidden text-center">
-              <Link href="/products?sort=best-selling" className={CTA} style={{ fontFamily: FONT_SANS }}>View all best sellers</Link>
+            <div className="mt-14 text-center">
+              <Link href="/products?flag=bestseller" className={CTA} style={{ fontFamily: FONT_SANS }}>Shop all best sellers</Link>
             </div>
           </div>
         </section>
@@ -349,46 +355,44 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 8. FEATURED COLLECTIONS: editorial layout.
-             Layout: sticky intro panel on the left, staggered two-column product grid on the right
-             (the right-hand column is dropped down so the grid reads like a magazine spread). */}
+      {/* 8. FEATURED COLLECTIONS: poster + mosaic.
+             One tall crimson poster tile on the left, four products in a 2x2 mosaic beside it. */}
       {featured.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 pt-16 sm:pt-24 pb-16 sm:pb-24">
-          <div className="grid lg:grid-cols-[300px_1fr] gap-10 lg:gap-16">
-            <div className="lg:sticky lg:top-28 self-start">
-              <GoldRule />
-              <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
-                Featured collections
-              </h2>
-              <p className="mt-5 text-[14px] leading-[1.9] font-light max-w-[34ch]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
-                Hand-picked by our team: export-grade stitching, soft cotton, and fits that last wash after wash.
-              </p>
-              <div className="mt-6 pl-4" style={{ borderLeft: `2px solid ${GOLD}` }}>
-                <p className="text-[13px] italic leading-relaxed" style={{ color: INK, fontFamily: FONT_SERIF }}>
-                  Made where India’s knitwear is made.
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div
+              className="col-span-2 lg:col-span-1 lg:row-span-2 relative flex flex-col justify-between p-7 sm:p-10 min-h-[320px]"
+              style={{ background: PRIMARY, color: PAPER }}
+            >
+              <span className="absolute inset-3 pointer-events-none" style={{ border: `1px solid ${GOLD}` }} aria-hidden="true" />
+              <div className="relative">
+                <GoldRule />
+                <h2 className="mt-5 text-[34px] sm:text-[46px] leading-[1.05]" style={{ fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                  Featured collections
+                </h2>
+                <p className="mt-5 text-[14px] leading-[1.9] font-light max-w-[32ch]" style={{ color: 'rgba(255,249,240,0.8)', fontFamily: FONT_SANS }}>
+                  Hand-picked by our team: export-grade stitching, soft cotton and fits that last wash after wash.
                 </p>
               </div>
-              <Link href="/products?featured=true" className={`${CTA} mt-8 hidden lg:inline-block`} style={{ fontFamily: FONT_SANS }}>
-                Shop the collection
-              </Link>
+              <div className="relative mt-10">
+                <p className="text-[22px] sm:text-[28px] italic leading-snug mb-6" style={{ color: GOLD, fontFamily: FONT_SERIF }}>
+                  Made where India’s knitwear is made.
+                </p>
+                <Link
+                  href="/products?flag=featured"
+                  className="inline-flex items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all"
+                  style={{ color: PAPER, fontFamily: FONT_SANS }}
+                >
+                  Shop the collection <ArrowRight size={14} />
+                </Link>
+              </div>
             </div>
 
-            <div>
-              <div className="grid grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-6 sm:gap-y-10">
-                {featured.map((p, i) => (
-                  <div
-                    key={p._id}
-                    className={`${i % 2 === 1 ? 'mt-8 sm:mt-14' : ''} ${i % 4 === 0 ? 'p-2 sm:p-3' : ''}`}
-                    style={i % 4 === 0 ? { background: '#fff', border: `1px solid ${GOLD}` } : undefined}
-                  >
-                    <ProductCard product={toCardProduct(p)} />
-                  </div>
-                ))}
+            {featured.map((p) => (
+              <div key={p._id} className="p-2 bg-white" style={{ border: `1px solid ${HAIRLINE}` }}>
+                <ProductCard product={toCardProduct(p)} />
               </div>
-              <div className="mt-12 lg:hidden text-center">
-                <Link href="/products?featured=true" className={CTA} style={{ fontFamily: FONT_SANS }}>Shop the collection</Link>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
       )}
