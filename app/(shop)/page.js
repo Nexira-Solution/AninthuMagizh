@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { formatINR } from '@/lib/utils';
 import { toCardProduct } from '@/lib/cardProduct';
 import { liveDiscountQuery } from '@/lib/discount';
-import { ArrowRight, Tag, Truck, RefreshCcw, ShieldCheck, Shirt, MessageCircle, ChevronDown } from 'lucide-react';
+import { ArrowRight, Tag, Truck, RefreshCcw, ShieldCheck, Shirt, MessageCircle } from 'lucide-react';
 
 // ISR: regenerated at most every 10 minutes. Admin API routes call revalidatePath('/').
 export const revalidate = 600;
@@ -35,11 +35,12 @@ const HAIRLINE = LINE;
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
+const NEW_LIMIT = 8;
+const BEST_LIMIT = 5;
 const FEATURED_LIMIT = 6;
 const DISCOUNT_LIMIT = 4;
 const REELS_LIMIT = 10;
 const CATEGORY_LIMIT = 24;
-const BUDGET_TILE_LIMIT = 8;
 
 // Optional: set NEXT_PUBLIC_WHATSAPP_NUMBER (e.g. 919876543210) to show the WhatsApp band.
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
@@ -51,82 +52,39 @@ const TRUST = [
   { Icon: Shirt, title: 'Direct from Tirupur', text: 'No middlemen' },
 ];
 
-// Defaults for the "Shop by budget" section. They are used when the admin has not
-// saved anything in Settings -> budgetSection (or leaves a field empty), so the
-// page looks exactly as before until you customise it.
-// Adjust hrefs to match the filter params your /products page reads.
-const DEFAULT_BUDGET = {
-  enabled: true,
-  title: 'Shop by budget',
-  sub: 'Great style at every price point.',
-  tiles: [
-    { label: 'Under ₹499', sub: 'Everyday basics', href: '/products?maxPrice=499' },
-    { label: 'Under ₹799', sub: 'Best value picks', href: '/products?maxPrice=799' },
-    { label: 'Under ₹999', sub: 'Premium for less', href: '/products?maxPrice=999' },
-   
-  ],
-};
-
-// Merge the admin's saved config over the defaults. Only internal links ("/...")
-// are accepted for tiles, so a typo or bad value can never create an unsafe link.
-function resolveBudget(cfg) {
-  const text = (v, fallback) => (typeof v === 'string' && v.trim() ? v.trim() : fallback);
-  const saved = Array.isArray(cfg?.tiles)
-    ? cfg.tiles
-        .map((t) => ({
-          label: text(t?.label, ''),
-          sub: text(t?.sub, ''),
-          href: text(t?.href, ''),
-        }))
-        .filter((t) => t.label && t.href.startsWith('/') && !t.href.startsWith('//'))
-        .slice(0, BUDGET_TILE_LIMIT)
-    : [];
-  return {
-    enabled: cfg?.enabled !== false,
-    title: text(cfg?.title, DEFAULT_BUDGET.title),
-    sub: cfg ? (typeof cfg.sub === 'string' ? cfg.sub.trim() : DEFAULT_BUDGET.sub) : DEFAULT_BUDGET.sub,
-    tiles: saved.length ? saved : DEFAULT_BUDGET.tiles,
-  };
-}
-
-const RIBBON = ['Crafted in Tirupur', 'Premium cotton', 'Everyday comfort', 'Festive favourites', 'Easy returns'];
-
-const STATS = [
-  { n: '100%', l: 'Sourced in Tirupur' },
-  { n: '24/7', l: 'Live shopping streams' },
-  { n: '5★', l: 'Customer-rated quality' },
-];
-
-const FAQS = [
-  { q: 'How long does delivery take?', a: 'Most orders arrive within 3–7 business days depending on your location.' },
-  { q: 'Can I return or exchange an item?', a: 'Yes. If the fit or product is not right, request a return or exchange within the window shown on the product page.' },
-  { q: 'Do you offer cash on delivery?', a: 'COD is available on eligible pin codes. You can see your options at checkout.' },
-  { q: 'Are the fabrics really from Tirupur?', a: 'Yes. We source directly from manufacturers in Tirupur, India’s knitwear capital.' },
-];
+const LIVE_PRODUCT = { isActive: true, isActiveSeller: true };
 
 async function getData() {
   await dbConnect();
-  const [banners, newArrivals, discountProducts, reviews, combos, categories, reels, settings] = await Promise.all([
-    Banner.find({ isActive: true }).sort({ sortOrder: 1 }).lean(),
-    Product.find({ isActive: true, isActiveSeller: true }).select('-costPrice').sort({ createdAt: -1 }).limit(FEATURED_LIMIT).lean(),
-    Product.find({ isActive: true, ...liveDiscountQuery() }).select('-costPrice').sort({ createdAt: -1 }).limit(DISCOUNT_LIMIT).lean(),
-    Review.find({ isApproved: true, isFeatured: true }).populate('product', 'name').limit(10).lean(),
-    Combo.find({ isActive: true }).limit(6).lean(),
-    Category.find({ isActive: true, parent: null }).sort({ sortOrder: 1, name: 1 }).limit(CATEGORY_LIMIT).lean(),
-    Reel.find({ isActive: true }).sort({ createdAt: -1 }).populate('product', 'name slug').limit(REELS_LIMIT).lean(),
-    Settings.findOne({ key: 'global' }).select('liveStreams budgetSection').lean(),
-  ]);
+  const [banners, newArrivals, bestSellers, featured, discountProducts, reviews, combos, categories, reels, settings] =
+    await Promise.all([
+      Banner.find({ isActive: true }).sort({ sortOrder: 1 }).lean(),
+      // New arrivals: newest first
+      Product.find(LIVE_PRODUCT).select('-costPrice').sort({ createdAt: -1 }).limit(NEW_LIMIT).lean(),
+      // Best sellers: highest sales first. Change `soldCount` to whatever your Product schema calls it
+      // (e.g. salesCount, totalSold, ordersCount). If the field doesn't exist this falls back to newest.
+      Product.find(LIVE_PRODUCT).select('-costPrice').sort({ soldCount: -1, createdAt: -1 }).limit(BEST_LIMIT).lean(),
+      // Featured collection: products flagged isFeatured in admin
+      Product.find({ ...LIVE_PRODUCT, isFeatured: true }).select('-costPrice').sort({ updatedAt: -1 }).limit(FEATURED_LIMIT).lean(),
+      Product.find({ isActive: true, ...liveDiscountQuery() }).select('-costPrice').sort({ createdAt: -1 }).limit(DISCOUNT_LIMIT).lean(),
+      Review.find({ isApproved: true, isFeatured: true }).populate('product', 'name').limit(10).lean(),
+      Combo.find({ isActive: true }).limit(6).lean(),
+      Category.find({ isActive: true, parent: null }).sort({ sortOrder: 1, name: 1 }).limit(CATEGORY_LIMIT).lean(),
+      Reel.find({ isActive: true }).sort({ createdAt: -1 }).populate('product', 'name slug').limit(REELS_LIMIT).lean(),
+      Settings.findOne({ key: 'global' }).select('liveStreams').lean(),
+    ]);
   return JSON.parse(
     JSON.stringify({
       banners,
       newArrivals,
+      bestSellers,
+      featured,
       discountProducts,
       reviews,
       combos,
       categories,
       reels,
       liveStreams: settings?.liveStreams || null,
-      budget: resolveBudget(settings?.budgetSection),
     })
   );
 }
@@ -220,27 +178,37 @@ function ComboCard({ c, large = false }) {
 
 const CTA = 'inline-block px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#C58A08] hover:bg-[#8F1538] text-[#29211E] hover:text-[#FFF9F0]';
 
+// Thin gold rule + diamond, used as a quiet premium divider
+function GoldRule() {
+  return (
+    <div className="flex items-center gap-3" aria-hidden="true">
+      <span style={{ width: 36, height: 1, background: GOLD }} />
+      <span className="w-1.5 h-1.5 rotate-45" style={{ background: GOLD }} />
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const {
     banners,
-    newArrivals: plainNewArrivals,
+    newArrivals,
+    bestSellers,
+    featured: featuredRaw,
     discountProducts: plainDiscountProducts,
     reviews,
     combos: plainCombos,
     categories: plainCategories,
     reels,
     liveStreams,
-    budget,
   } = await getData();
+
+  // If nothing is flagged isFeatured yet, fall back to the next-newest products so the section never looks empty
+  const featured = featuredRaw?.length ? featuredRaw : newArrivals.slice(0, FEATURED_LIMIT);
+  const [spotlight, ...restBest] = bestSellers;
 
   return (
     <div className="overflow-x-hidden" style={{ background: PAPER }}>
       <h1 className="sr-only">Tirupur Clothing Hub: premium clothing sourced directly from Tirupur</h1>
-      <style>{`
-        @keyframes ribbonMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-        .ribbon-track{animation:ribbonMove 38s linear infinite}
-        @media (prefers-reduced-motion: reduce){.ribbon-track{animation:none}}
-      `}</style>
 
       {/* 1. Banner */}
       <BannerCarousel banners={banners} />
@@ -268,82 +236,92 @@ export default async function HomePage() {
       {/* 4. Categories: bento mosaic ('bento' | 'arch' | 'grid') */}
       <CategoryShowcase categories={plainCategories} layout="bento" />
 
-      {/* 5. Budget tiles: title, subtitle and tiles come from Settings.budgetSection */}
-      {budget.enabled && (
-        <section className="max-w-6xl mx-auto px-4 pt-12 pb-4">
-          <SectionTitle title={budget.title} sub={budget.sub} />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
-            {budget.tiles.map((b, i) => {
-              const dark = i % 2 === 0;
-              return (
-                <Link
-                  key={`${b.label}-${i}`}
-                  href={b.href}
-                  className="group flex flex-col justify-between p-5 sm:p-7 min-h-[130px] sm:min-h-[160px] transition-shadow hover:shadow-xl"
-                  style={{ background: dark ? PRIMARY : '#fff', color: dark ? PAPER : INK, border: `1px solid ${dark ? PRIMARY : HAIRLINE}`, fontFamily: FONT_SANS }}
-                >
-                  <span className="text-lg sm:text-2xl" style={{ fontFamily: FONT_SERIF }}>{b.label}</span>
-                  <span className="flex items-center justify-between text-[11px] sm:text-[12px] font-light">
-                    {b.sub}
-                    <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" style={{ color: dark ? GOLD : PRIMARY }} />
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* 6. Featured: sticky intro panel + product grid */}
-      {plainNewArrivals.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 pt-14 pb-16">
-          <div className="grid lg:grid-cols-[260px_1fr] gap-8 lg:gap-12">
-            <div className="lg:sticky lg:top-28 self-start">
-              <h2 className="text-[28px] sm:text-[38px] leading-[1.15]" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
-                Featured collection
-              </h2>
-              <div className="my-5 flex items-center gap-3">
-                <span style={{ width: 36, height: 1, background: GOLD }} />
-                <span className="w-1 h-1 rounded-full" style={{ background: GOLD }} />
+      {/* 5. NEW ARRIVALS: full-bleed swipe rail with a big serif lead-in.
+             Layout: heading row on top, then a horizontally scrolling strip that bleeds off the right edge. */}
+      {newArrivals.length > 0 && (
+        <section className="pt-16 sm:pt-20 pb-6">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8 sm:mb-10">
+              <div>
+                <GoldRule />
+                <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                  New arrivals
+                </h2>
+                <p className="mt-3 text-[14px] font-light max-w-[42ch] leading-[1.8]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
+                  Just off the Tirupur looms. Swipe through this week’s newest pieces.
+                </p>
               </div>
-              <p className="text-[14px] leading-[1.8] font-light max-w-[34ch]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
-                Fresh arrivals from Tirupur, cut for comfort and made to last.
-              </p>
-              <Link href="/products" className={`${CTA} mt-7 hidden lg:inline-block`} style={{ fontFamily: FONT_SANS }}>
-                Shop all
+              <Link href="/products?sort=newest" className="shrink-0 inline-flex items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>
+                See everything new <ArrowRight size={14} />
               </Link>
             </div>
-            <div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {plainNewArrivals.map((p) => (
-                  <ProductCard key={p._id} product={toCardProduct(p)} />
-                ))}
-              </div>
-              <div className="mt-8 lg:hidden text-center">
-                <Link href="/products" className={CTA} style={{ fontFamily: FONT_SANS }}>Shop all</Link>
-              </div>
+          </div>
+          <div className="max-w-6xl mx-auto">
+            <div className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {newArrivals.map((p) => (
+                <div key={p._id} className="snap-start shrink-0 w-[62%] sm:w-[34%] lg:w-[23.5%]">
+                  <ProductCard product={toCardProduct(p)} />
+                </div>
+              ))}
+              <div className="shrink-0 w-[1px]" aria-hidden="true" />
             </div>
           </div>
         </section>
       )}
 
-      {/* 7. Ribbon marquee */}
-      <div className="overflow-hidden py-4" style={{ background: INK }} aria-hidden="true">
-        <div className="ribbon-track flex w-max">
-          {[0, 1].map((k) => (
-            <div key={k} className="flex shrink-0 items-center">
-              {[...RIBBON, ...RIBBON].map((w, i) => (
-                <span key={`${k}-${i}`} className="flex items-center">
-                  <span className="px-6 sm:px-10 text-lg sm:text-2xl italic whitespace-nowrap" style={{ color: PAPER, fontFamily: FONT_SERIF }}>{w}</span>
-                  <span className="w-1.5 h-1.5 rotate-45" style={{ background: GOLD }} />
-                </span>
-              ))}
+      {/* 6. BEST SELLERS: dark ranked showcase.
+             Layout: #1 is a tall spotlight on the left, ranks 2-5 sit in a 2x2 grid on the right. */}
+      {bestSellers.length > 0 && (
+        <section className="my-14 sm:my-20" style={{ background: INK }}>
+          <div className="max-w-6xl mx-auto px-4 py-14 sm:py-20">
+            <div className="flex items-end justify-between gap-4 mb-8 sm:mb-12">
+              <div>
+                <GoldRule />
+                <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                  Best sellers
+                </h2>
+                <p className="mt-3 text-[14px] font-light max-w-[42ch] leading-[1.8]" style={{ color: 'rgba(255,249,240,0.65)', fontFamily: FONT_SANS }}>
+                  The pieces our customers reorder the most, ranked by sales.
+                </p>
+              </div>
+              <Link href="/products?sort=best-selling" className="hidden sm:inline-flex shrink-0 items-center gap-2 text-[13px] font-bold hover:gap-3 transition-all" style={{ color: GOLD, fontFamily: FONT_SANS }}>
+                View all best sellers <ArrowRight size={14} />
+              </Link>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* 8. Discounts: swipe rail on mobile, grid on desktop, wash background */}
+            <div className="grid lg:grid-cols-[1.05fr_1.4fr] gap-5 sm:gap-8">
+              {/* Rank 1 spotlight */}
+              {spotlight && (
+                <div className="relative p-4 sm:p-6" style={{ background: PAPER, outline: `1px solid ${GOLD}`, outlineOffset: -8 }}>
+                  <div className="flex items-baseline gap-3 mb-3 px-1">
+                    <span className="text-[56px] sm:text-[72px] leading-none" style={{ color: GOLD, fontFamily: FONT_SERIF }}>1</span>
+                    <span className="text-[12px] font-bold" style={{ color: PRIMARY, fontFamily: FONT_SANS }}>Our top seller</span>
+                  </div>
+                  <ProductCard product={toCardProduct(spotlight)} />
+                </div>
+              )}
+
+              {/* Ranks 2-5 */}
+              <div className="grid grid-cols-2 gap-4 sm:gap-6 content-start">
+                {restBest.map((p, i) => (
+                  <div key={p._id} className="p-3 sm:p-4" style={{ background: PAPER }}>
+                    <span className="block mb-2 text-[30px] sm:text-[38px] leading-none" style={{ color: GOLD, fontFamily: FONT_SERIF }}>
+                      {i + 2}
+                    </span>
+                    <ProductCard product={toCardProduct(p)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 sm:hidden text-center">
+              <Link href="/products?sort=best-selling" className={CTA} style={{ fontFamily: FONT_SANS }}>View all best sellers</Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 7. Discounts: swipe rail on mobile, grid on desktop, wash background */}
       {plainDiscountProducts?.length > 0 && (
         <section className="py-16" style={{ background: WASH }}>
           <div className="max-w-6xl mx-auto px-4">
@@ -371,32 +349,51 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 9. Brand story: crimson band with stats */}
-      <section style={{ background: PRIMARY }}>
-        <div className="max-w-6xl mx-auto px-6 py-16 sm:py-24 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-          <div>
-            <h2 className="text-[28px] sm:text-[42px] leading-[1.15]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
-              Made where India’s knitwear is made
-            </h2>
-            <p className="mt-5 text-[14px] sm:text-[15px] leading-[1.8] font-light max-w-[48ch]" style={{ color: 'rgba(255,249,240,0.8)', fontFamily: FONT_SANS }}>
-              Tirupur Clothing Hub works directly with Tirupur manufacturers, so you get export-grade stitching and soft, breathable fabric without the retail markup.
-            </p>
-            <Link href="/products" className="inline-block mt-8 px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors hover:bg-[#FFF9F0]" style={{ background: GOLD, color: INK, fontFamily: FONT_SANS }}>
-              Explore the range
-            </Link>
-          </div>
-          <div className="grid grid-cols-3 md:grid-cols-1">
-            {STATS.map((s, i) => (
-              <div key={s.l} className="py-4 md:py-6 text-center md:text-left" style={{ borderTop: i === 0 ? undefined : '1px solid rgba(255,249,240,0.2)' }}>
-                <p className="text-3xl sm:text-5xl" style={{ color: GOLD, fontFamily: FONT_SERIF }}>{s.n}</p>
-                <p className="mt-1 text-[11px] sm:text-[13px] font-light" style={{ color: PAPER, fontFamily: FONT_SANS }}>{s.l}</p>
+      {/* 8. FEATURED COLLECTIONS: editorial layout.
+             Layout: sticky intro panel on the left, staggered two-column product grid on the right
+             (the right-hand column is dropped down so the grid reads like a magazine spread). */}
+      {featured.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 pt-16 sm:pt-24 pb-16 sm:pb-24">
+          <div className="grid lg:grid-cols-[300px_1fr] gap-10 lg:gap-16">
+            <div className="lg:sticky lg:top-28 self-start">
+              <GoldRule />
+              <h2 className="mt-4 text-[32px] sm:text-[48px] leading-[1.05]" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
+                Featured collections
+              </h2>
+              <p className="mt-5 text-[14px] leading-[1.9] font-light max-w-[34ch]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
+                Hand-picked by our team: export-grade stitching, soft cotton, and fits that last wash after wash.
+              </p>
+              <div className="mt-6 pl-4" style={{ borderLeft: `2px solid ${GOLD}` }}>
+                <p className="text-[13px] italic leading-relaxed" style={{ color: INK, fontFamily: FONT_SERIF }}>
+                  Made where India’s knitwear is made.
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <Link href="/products?featured=true" className={`${CTA} mt-8 hidden lg:inline-block`} style={{ fontFamily: FONT_SANS }}>
+                Shop the collection
+              </Link>
+            </div>
 
-      {/* 10. Combos: one hero combo, then a grid */}
+            <div>
+              <div className="grid grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-6 sm:gap-y-10">
+                {featured.map((p, i) => (
+                  <div
+                    key={p._id}
+                    className={`${i % 2 === 1 ? 'mt-8 sm:mt-14' : ''} ${i % 4 === 0 ? 'p-2 sm:p-3' : ''}`}
+                    style={i % 4 === 0 ? { background: '#fff', border: `1px solid ${GOLD}` } : undefined}
+                  >
+                    <ProductCard product={toCardProduct(p)} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-12 lg:hidden text-center">
+                <Link href="/products?featured=true" className={CTA} style={{ fontFamily: FONT_SANS }}>Shop the collection</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 9. Combos: one hero combo, then a grid */}
       {plainCombos?.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 py-16">
           <SectionTitle title="Combo offers" sub="Buy together, save together." href="/combo" />
@@ -409,36 +406,13 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 11. Reviews */}
+      {/* 10. Reviews */}
       <ReviewSection reviews={reviews} />
 
-      {/* 12. Reels */}
+      {/* 11. Reels */}
       <ReelsSection reels={reels} />
 
-      {/* 13. FAQ: heading left, answers right */}
-      <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-[1fr_1.7fr] gap-8 md:gap-16">
-        <div>
-          <h2 className="text-[26px] sm:text-[34px] leading-tight" style={{ color: INK, fontFamily: FONT_SERIF, fontWeight: 400 }}>
-            Good to know
-          </h2>
-          <p className="mt-3 text-[14px] font-light max-w-[30ch] leading-relaxed" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>
-            Quick answers about delivery, returns and payments.
-          </p>
-        </div>
-        <div style={{ borderTop: `1px solid ${HAIRLINE}` }}>
-          {FAQS.map((f) => (
-            <details key={f.q} className="group py-4" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
-              <summary className="flex items-center justify-between cursor-pointer list-none text-[14px] sm:text-[15px] font-bold" style={{ color: INK, fontFamily: FONT_SANS }}>
-                {f.q}
-                <ChevronDown size={18} className="shrink-0 ml-4 transition-transform group-open:rotate-180" style={{ color: PRIMARY }} />
-              </summary>
-              <p className="mt-3 text-[13.5px] leading-[1.8] font-light max-w-[60ch]" style={{ color: INK_FAINT, fontFamily: FONT_SANS }}>{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* 14. WhatsApp band (only if NEXT_PUBLIC_WHATSAPP_NUMBER is set) */}
+      {/* 12. WhatsApp band (only if NEXT_PUBLIC_WHATSAPP_NUMBER is set) */}
       {WHATSAPP && (
         <section style={{ background: WASH, borderTop: `1px solid ${HAIRLINE}` }}>
           <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
