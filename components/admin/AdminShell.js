@@ -27,7 +27,7 @@ const NAV = [
   { href: '/admin/orders',     label: 'Orders',          icon: ShoppingCart },
   { href: '/admin/invoices',   label: 'Invoices',        icon: Receipt },
   { href: '/admin/purchases',  label: 'Purchases',       icon: ShoppingBag },
-  { href: '/admin/expenses',   label: 'Expenses',        icon: Wallet },
+  // { href: '/admin/expenses',   label: 'Expenses',        icon: Wallet },
   { href: '/admin/attendance', label: 'Attendance',      icon: CalendarCheck },
   { href: '/admin/inventory',  label: 'Inventory',       icon: Boxes },
   { href: '/admin/notify',     label: 'Notify Requests', icon: BellRing },
