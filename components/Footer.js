@@ -1,17 +1,8 @@
 import Link from 'next/link';
 import { Instagram, Facebook, Youtube, Mail, MapPin, Phone } from 'lucide-react';
 import { Fraunces, Inter } from 'next/font/google';
-import {
-  STORE_NAME,
-  BRAND_NAME,
-  TAGLINE,
-  PHONES,
-  EMAIL,
-  DEFAULT_WHATSAPP,
-  ADDRESS_LINES,
-  SOCIALS,
-  formatPhone,
-} from '@/lib/siteConfig';
+import { formatPhone } from '@/lib/siteConfig';
+import { getSiteSettings } from '@/lib/siteSettings';
 
 const display = Fraunces({ subsets: ['latin'], weight: ['400'], variable: '--font-display' });
 const body = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-body' });
@@ -29,15 +20,14 @@ const HELP = [
   { label: 'Privacy Policy', href: '/privacy' },
 ];
 
-// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
-// Keep BG in sync with CouponMarquee and Navbar.
-const BG = '#8F1538';
-const ACCENT = '#E8B84A';
-const TEXT = '#FFF9F0';
-const TEXT_SOFT = 'rgba(255,249,240,0.75)';
-const LINE = 'rgba(255,249,240,0.2)';
-const CHIP = 'rgba(255,249,240,0.12)';
-const WA_GREEN = '#25D366';
+// Colours follow the admin theme (CSS variables from the shop layout)
+const BG = 'var(--brand-primary)';
+const ACCENT = 'var(--brand-secondary-light)';
+const TEXT = 'var(--brand-bg)';
+const TEXT_SOFT = 'color-mix(in srgb, var(--brand-bg) 75%, transparent)';
+const LINE = 'color-mix(in srgb, var(--brand-bg) 20%, transparent)';
+const CHIP = 'color-mix(in srgb, var(--brand-bg) 12%, transparent)';
+const WA_GREEN = '#25D366'; // WhatsApp brand colour, intentionally fixed
 
 function WhatsAppIcon({ size = 22 }) {
   return (
@@ -47,12 +37,11 @@ function WhatsAppIcon({ size = 22 }) {
   );
 }
 
-// Round icon buttons: social links / WhatsApp (filled green) / email
-function SocialRow({ whatsapp }) {
+function SocialRow({ whatsapp, socials, email }) {
   const base = 'flex items-center justify-center w-12 h-12 rounded-full transition-transform hover:scale-105';
   return (
     <div className="flex items-center gap-3">
-      {SOCIALS.map(({ key, label, href }) => {
+      {socials.map(({ key, label, href }) => {
         const Icon = SOCIAL_ICONS[key];
         if (!Icon) return null;
         return (
@@ -66,8 +55,8 @@ function SocialRow({ whatsapp }) {
           <WhatsAppIcon size={22} />
         </a>
       )}
-      {EMAIL && (
-        <a href={`mailto:${EMAIL}`} aria-label="Email" className={base} style={{ background: CHIP, color: TEXT }}>
+      {email && (
+        <a href={`mailto:${email}`} aria-label="Email" className={base} style={{ background: CHIP, color: TEXT }}>
           <Mail size={22} strokeWidth={1.8} />
         </a>
       )}
@@ -75,13 +64,10 @@ function SocialRow({ whatsapp }) {
   );
 }
 
-// Mobile: stacked section with serif heading and a divider above it
 function MobileSection({ title, children }) {
   return (
     <div className="py-7 border-t" style={{ borderColor: LINE }}>
-      <h3 className={`${display.className} text-[26px] leading-tight mb-4`} style={{ color: TEXT, fontWeight: 400 }}>
-        {title}
-      </h3>
+      <h3 className={`${display.className} text-[26px] leading-tight mb-4`} style={{ color: TEXT, fontWeight: 400 }}>{title}</h3>
       {children}
     </div>
   );
@@ -92,16 +78,13 @@ function MobileLinks({ links }) {
     <ul className="space-y-3.5">
       {links.map((l) => (
         <li key={l.href}>
-          <Link href={l.href} className="text-[17px] hover:opacity-70 transition-opacity" style={{ color: ACCENT }}>
-            {l.label}
-          </Link>
+          <Link href={l.href} className="text-[17px] hover:opacity-70 transition-opacity" style={{ color: ACCENT }}>{l.label}</Link>
         </li>
       ))}
     </ul>
   );
 }
 
-// Desktop: link column with a small gold heading
 function DesktopColumn({ title, links }) {
   return (
     <div>
@@ -109,9 +92,7 @@ function DesktopColumn({ title, links }) {
       <ul className="space-y-3">
         {links.map((l) => (
           <li key={l.href}>
-            <Link href={l.href} className="text-[14px] hover:opacity-70 transition-opacity" style={{ color: TEXT }}>
-              {l.label}
-            </Link>
+            <Link href={l.href} className="text-[14px] hover:opacity-70 transition-opacity" style={{ color: TEXT }}>{l.label}</Link>
           </li>
         ))}
       </ul>
@@ -119,7 +100,6 @@ function DesktopColumn({ title, links }) {
   );
 }
 
-// Desktop: one cell of the contact strip
 function ContactCell({ Icon, label, children, last }) {
   return (
     <div className="flex items-start gap-4 px-8 first:pl-0 last:pr-0 py-8" style={last ? undefined : { borderRight: `1px solid ${LINE}` }}>
@@ -134,32 +114,35 @@ function ContactCell({ Icon, label, children, last }) {
   );
 }
 
-export default function Footer() {
-  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP || DEFAULT_WHATSAPP;
-  const phone = PHONES[0];
-  const telHref = `tel:+91${String(phone).replace(/\D/g, '').slice(-10)}`;
+export default async function Footer() {
+  const site = await getSiteSettings();
+  const { storeName, brandName, tagline, whatsapp, email, socials, addressLines } = site;
+  const phone = site.phones[0];
+  const telHref = phone ? `tel:+91${String(phone).replace(/\D/g, '').slice(-10)}` : null;
 
   return (
     <footer className={`${body.className} mt-16`} style={{ background: BG }}>
 
-      {/* ============ DESKTOP (md+): contact strip on top, brand + links below ============ */}
+      {/* DESKTOP */}
       <div className="hidden md:block">
         <div style={{ borderBottom: `1px solid ${LINE}` }}>
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-3">
             <ContactCell Icon={MapPin} label="Visit us">
-              {ADDRESS_LINES.map((l) => (<span key={l} className="block">{l}</span>))}
+              {addressLines.map((l) => (<span key={l} className="block">{l}</span>))}
               <span className="block mt-1 text-[12px]">Online sales only</span>
             </ContactCell>
 
             <ContactCell Icon={Phone} label="Call or WhatsApp">
-              <a href={telHref} className="block hover:opacity-70 transition-opacity" style={{ color: TEXT }}>{formatPhone(phone)}</a>
-              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="block mt-1 hover:opacity-70 transition-opacity" style={{ color: ACCENT }}>
-                Chat on WhatsApp
-              </a>
+              {phone && <a href={telHref} className="block hover:opacity-70 transition-opacity" style={{ color: TEXT }}>{formatPhone(phone)}</a>}
+              {whatsapp && (
+                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="block mt-1 hover:opacity-70 transition-opacity" style={{ color: ACCENT }}>
+                  Chat on WhatsApp
+                </a>
+              )}
             </ContactCell>
 
             <ContactCell Icon={Mail} label="Email us" last>
-              <a href={`mailto:${EMAIL}`} className="break-all hover:opacity-70 transition-opacity" style={{ color: TEXT }}>{EMAIL}</a>
+              {email && <a href={`mailto:${email}`} className="break-all hover:opacity-70 transition-opacity" style={{ color: TEXT }}>{email}</a>}
               <span className="block mt-1 text-[12px]">We reply within one working day</span>
             </ContactCell>
           </div>
@@ -167,35 +150,35 @@ export default function Footer() {
 
         <div className="max-w-7xl mx-auto px-4 py-14 grid grid-cols-12 gap-10">
           <div className="col-span-6">
-            <h2 className={`${display.className} text-[44px] leading-[1.05]`} style={{ color: TEXT, fontWeight: 400 }}>
-              {STORE_NAME}
-            </h2>
-            <p className="mt-2 text-[13px]" style={{ color: ACCENT }}>{BRAND_NAME}</p>
-            <p className="mt-5 text-[15px] leading-relaxed max-w-[38ch]" style={{ color: TEXT_SOFT }}>{TAGLINE}</p>
-            <div className="mt-8"><SocialRow whatsapp={whatsapp} /></div>
+            <h2 className={`${display.className} text-[44px] leading-[1.05]`} style={{ color: TEXT, fontWeight: 400 }}>{storeName}</h2>
+            <p className="mt-2 text-[13px]" style={{ color: ACCENT }}>{brandName}</p>
+            <p className="mt-5 text-[15px] leading-relaxed max-w-[38ch]" style={{ color: TEXT_SOFT }}>{tagline}</p>
+            <div className="mt-8"><SocialRow whatsapp={whatsapp} socials={socials} email={email} /></div>
           </div>
           <div className="col-span-3"><DesktopColumn title="Explore" links={EXPLORE} /></div>
           <div className="col-span-3"><DesktopColumn title="Help" links={HELP} /></div>
         </div>
       </div>
 
-      {/* ============ MOBILE: stacked sections ============ */}
+      {/* MOBILE */}
       <div className="md:hidden px-6 pt-12 pb-4">
         <div className="pb-8">
-          <h2 className={`${display.className} text-[32px] leading-tight`} style={{ color: TEXT, fontWeight: 400 }}>{STORE_NAME}</h2>
-          <p className="mt-1 text-[14px]" style={{ color: ACCENT }}>{BRAND_NAME}</p>
-          <p className="mt-4 text-[17px] leading-relaxed max-w-[34ch]" style={{ color: TEXT_SOFT }}>{TAGLINE}</p>
+          <h2 className={`${display.className} text-[32px] leading-tight`} style={{ color: TEXT, fontWeight: 400 }}>{storeName}</h2>
+          <p className="mt-1 text-[14px]" style={{ color: ACCENT }}>{brandName}</p>
+          <p className="mt-4 text-[17px] leading-relaxed max-w-[34ch]" style={{ color: TEXT_SOFT }}>{tagline}</p>
         </div>
 
         <MobileSection title="Get in Touch">
           <div className="space-y-3.5 text-[17px] leading-relaxed" style={{ color: TEXT_SOFT }}>
-            <p className="flex items-start gap-2">
-              <MapPin size={16} className="shrink-0 mt-1.5" style={{ color: ACCENT }} />
-              <span>{ADDRESS_LINES.map((l, i) => (<span key={l}>{l}{i < ADDRESS_LINES.length - 1 && <br />}</span>))}</span>
-            </p>
-            <p><a href={telHref} style={{ color: TEXT }}>{formatPhone(phone)}</a></p>
-            <p><a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" style={{ color: ACCENT }}>WhatsApp us</a></p>
-            <p><a href={`mailto:${EMAIL}`} className="break-all" style={{ color: ACCENT }}>{EMAIL}</a></p>
+            {addressLines.length > 0 && (
+              <p className="flex items-start gap-2">
+                <MapPin size={16} className="shrink-0 mt-1.5" style={{ color: ACCENT }} />
+                <span>{addressLines.map((l, i) => (<span key={l}>{l}{i < addressLines.length - 1 && <br />}</span>))}</span>
+              </p>
+            )}
+            {phone && <p><a href={telHref} style={{ color: TEXT }}>{formatPhone(phone)}</a></p>}
+            {whatsapp && <p><a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" style={{ color: ACCENT }}>WhatsApp us</a></p>}
+            {email && <p><a href={`mailto:${email}`} className="break-all" style={{ color: ACCENT }}>{email}</a></p>}
             <p className="inline-flex items-center gap-2 text-[14px]">
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
               Online sales only
@@ -206,22 +189,15 @@ export default function Footer() {
         <MobileSection title="Explore"><MobileLinks links={EXPLORE} /></MobileSection>
         <MobileSection title="Help"><MobileLinks links={HELP} /></MobileSection>
 
-        <div className="pt-2 pb-4"><SocialRow whatsapp={whatsapp} /></div>
+        <div className="pt-2 pb-4"><SocialRow whatsapp={whatsapp} socials={socials} email={email} /></div>
       </div>
 
-      {/* Bottom bar. Extra bottom padding on mobile keeps the credit clear of the fixed bottom nav. */}
       <div style={{ borderTop: `1px solid ${LINE}` }}>
         <div className="max-w-7xl mx-auto px-6 md:px-4 pt-5 pb-28 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
           <p className="text-[12px]" style={{ color: TEXT_SOFT }}>
-            © {new Date().getFullYear()} {STORE_NAME}. All rights reserved.
+            © {new Date().getFullYear()} {storeName}. All rights reserved.
           </p>
-          <a
-            href="https://www.nexirasolution.in"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 text-[12px] transition-opacity hover:opacity-75"
-            style={{ color: TEXT_SOFT }}
-          >
+          <a href="https://www.nexirasolution.in" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[12px] transition-opacity hover:opacity-75" style={{ color: TEXT_SOFT }}>
             Designed and developed by
             <span className="font-medium tracking-wide" style={{ color: ACCENT }}>Nexira Solution</span>
           </a>

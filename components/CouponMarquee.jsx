@@ -3,15 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Tag, Truck } from 'lucide-react';
 
-// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
-// Keep these tokens in sync with Navbar if you tweak the palette.
-const BG = '#8F1538';                       // primary crimson
-const TEXT = '#FFF9F0';                     // cream text
-const TEXT_FAINT = 'rgba(255, 249, 240, 0.75)';
-const ACCENT = '#E8B84A';                   // light gold (derived from secondary) for icons / coupon code underline
-
-// A quiet serif, matched to the wordmark used elsewhere on the site,
-// so the marquee reads as part of the same brand rather than generic UI text.
+// Colours come from the admin "Site settings" theme (CSS variables set in the shop layout).
+const BG = 'var(--brand-primary)';
+const TEXT = 'var(--brand-bg)';
+const TEXT_FAINT = 'color-mix(in srgb, var(--brand-bg) 75%, transparent)';
+const ACCENT = 'var(--brand-secondary-light)';
 const FONT = "Georgia, 'Times New Roman', serif";
 
 export default function CouponMarquee() {
@@ -40,23 +36,12 @@ export default function CouponMarquee() {
 
   return (
     <div className="relative overflow-hidden py-2" style={{ background: BG }}>
-      {/* Fade edges */}
-      <div
-        className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10"
-        style={{ background: `linear-gradient(to right, ${BG}, transparent)` }}
-      />
-      <div
-        className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10"
-        style={{ background: `linear-gradient(to left, ${BG}, transparent)` }}
-      />
+      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10" style={{ background: `linear-gradient(to right, ${BG}, transparent)` }} />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10" style={{ background: `linear-gradient(to left, ${BG}, transparent)` }} />
 
       <div className="flex animate-marquee whitespace-nowrap w-max">
         {items.map((c, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-2 mx-8 text-[12px] tracking-[0.3px]"
-            style={{ color: TEXT, fontFamily: FONT }}
-          >
+          <span key={i} className="inline-flex items-center gap-2 mx-8 text-[12px] tracking-[0.3px]" style={{ color: TEXT, fontFamily: FONT }}>
             {i > 0 && <span className="mr-4" style={{ color: ACCENT }}>—</span>}
 
             {c.type === 'freeshipping' ? (
@@ -68,17 +53,10 @@ export default function CouponMarquee() {
               <>
                 <Tag size={12} strokeWidth={1.25} className="shrink-0" style={{ color: ACCENT }} />
                 Use{' '}
-                <span
-                  className="italic px-1.5"
-                  style={{ color: ACCENT, borderBottom: `1px solid ${ACCENT}` }}
-                >
-                  {c.code}
-                </span>
+                <span className="italic px-1.5" style={{ color: ACCENT, borderBottom: `1px solid ${ACCENT}` }}>{c.code}</span>
                 {' '}for{' '}
                 {c.type === 'percent' ? `${c.value}% off` : `₹${c.value} off`}
-                {c.minOrderValue > 0 && (
-                  <span style={{ color: TEXT_FAINT }}> on orders above ₹{c.minOrderValue}</span>
-                )}
+                {c.minOrderValue > 0 && <span style={{ color: TEXT_FAINT }}> on orders above ₹{c.minOrderValue}</span>}
               </>
             )}
           </span>

@@ -9,22 +9,17 @@ import { useCart } from './CartContext';
 import { useWishlist } from './WhishlistContext';
 import CouponMarquee from './CouponMarquee';
 
-const STORE_NAME = 'Aninthu Magizh';
-
-// WhatsApp number that receives bulk enquiries: country code + number, digits only
-// (example: 919876543210). Set NEXT_PUBLIC_WHATSAPP_NUMBER in .env.local, or pass
-// a `whatsappNumber` prop to <Navbar />.
+// WhatsApp fallback if nothing is set in admin
 const DEFAULT_WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '916369116002';
 
-// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
-// Keep these tokens in sync with CouponMarquee.
-const PRIMARY = '#8F1538';     // crimson: hover / active text, dropdown headings
-const INK = '#29211E';         // primary text
-const INK_FAINT = '#7A6A63';   // secondary text (derived from text)
-const GOLD = '#C58A08';        // secondary: badges, dropdown top border, send button
-const HAIRLINE = '#E5CDD3';    // soft borders (derived tint of primary)
-const PAPER = '#FFF9F0';       // background
-const RUST = '#B0503A';        // form errors (kept as-is so errors read as a warning)
+// Colours follow the admin "Site settings" theme (CSS variables from the shop layout)
+const PRIMARY = 'var(--brand-primary)';
+const INK = 'var(--brand-ink)';
+const INK_FAINT = 'var(--brand-ink-soft)';
+const GOLD = 'var(--brand-secondary)';
+const HAIRLINE = 'var(--brand-line)';
+const PAPER = 'var(--brand-bg)';
+const RUST = '#B0503A';
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
 const SHOP_GROUPS = [
@@ -58,7 +53,7 @@ function SelectField({ value, onChange, disabled, style, children }) {
 
 // `products` = [{ _id, name, category }] where `category` is a category/subcategory
 // _id or slug (or a populated { _id, slug } object).
-function BulkEnquiryModal({ whatsappNumber, categories, products, onClose }) {
+function BulkEnquiryModal({ whatsappNumber, storeName, categories, products, onClose }) {
   const [form, setForm] = useState({ name: '', phone: '', quantity: '', details: '' });
   const [categoryId, setCategoryId] = useState('');
   const [productId, setProductId] = useState('');
@@ -113,7 +108,7 @@ function BulkEnquiryModal({ whatsappNumber, categories, products, onClose }) {
     setError('');
 
     const lines = [
-      `Hi ${STORE_NAME}, I'd like to make a bulk enquiry.`,
+      `Hi ${storeName}, I'd like to make a bulk enquiry.`,
       '',
       `Name: ${name}`,
       `Phone: ${phone}`,
@@ -259,7 +254,11 @@ function BulkEnquiryModal({ whatsappNumber, categories, products, onClose }) {
 // `categories` = main categories, each with its own `subcategories` array.
 // It is loaded and cached on the server (see lib/navCategories.js and the shop
 // layout), so the browser no longer calls /api/categories on every page view.
-export default function Navbar({ categories = [], products = [], whatsappNumber = DEFAULT_WHATSAPP_NUMBER }) {
+export default function Navbar({ categories = [], products = [], site, whatsappNumber }) {
+  const storeName = site?.storeName || 'Store';
+  const logo = site?.logo || '/logo.png';
+  const wa = whatsappNumber || site?.whatsapp || DEFAULT_WHATSAPP_NUMBER;
+
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
@@ -455,9 +454,10 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
               <div className="relative w-28 h-28 sm:w-36 sm:h-36">
                 {/* `sizes` stops Next from generating huge srcset variants for a small logo */}
                 <Image
-                  src="/logo.png"
-                  alt={STORE_NAME}
+                  src={logo}
+                  alt={storeName}
                   fill
+                  unoptimized
                   sizes="(min-width: 640px) 144px, 112px"
                   className="object-contain"
                   priority
@@ -546,9 +546,10 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
           >
             <div className="relative w-16 h-16">
               <Image
-                src="/logo.png"
-                alt={STORE_NAME}
+                src={logo}
+                alt={storeName}
                 fill
+                unoptimized
                 sizes="64px"
                 className="object-contain"
               />
@@ -729,7 +730,8 @@ export default function Navbar({ categories = [], products = [], whatsappNumber 
 
       {enquiryOpen && (
         <BulkEnquiryModal
-          whatsappNumber={whatsappNumber}
+          whatsappNumber={wa}
+          storeName={storeName}
           categories={categories}
           products={products}
           onClose={() => setEnquiryOpen(false)}

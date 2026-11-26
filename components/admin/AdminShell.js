@@ -6,18 +6,18 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, Package, ListTree, ShoppingCart, Boxes, Image as ImageIcon, Sparkles, BellRing,ShoppingBag,Wallet,CalendarCheck,
   Clapperboard, Star, Ticket, Layers, FileBarChart, Settings as SettingsIcon, Menu, X, LogOut, Percent,
-  Receipt
+  Receipt, Palette
 } from 'lucide-react';
 
-// Design tokens: same crimson / gold / cream system as the rest of the site.
-// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
-const INK = '#29211E';        // main text
-const INK_SOFT = '#8A7A70';   // muted warm gray for secondary text
-const PRIMARY = '#8F1538';    // crimson: brand name, active nav item
-const GOLD = '#C58A08';       // active item accent
-const WASH = '#F6EADB';       // hover fill (light warm tint)
-const LINE = '#E8D5C4';       // soft warm borders
-const PAPER = '#FFF9F0';      // cream background
+// Colours follow the "Site settings" theme (CSS variables set in the root layout via themeCss(site)).
+// The second value in each var() is the fallback used if the variables aren't present on this page.
+const INK = 'var(--brand-ink, #29211E)';          // main text
+const INK_SOFT = 'var(--brand-ink-soft, #8A7A70)'; // muted text
+const PRIMARY = 'var(--brand-primary, #8F1538)';   // brand name, active nav item
+const GOLD = 'var(--brand-secondary, #C58A08)';    // active item accent
+const WASH = 'var(--brand-wash, #F6EADB)';         // hover fill
+const LINE = 'var(--brand-line, #E8D5C4)';         // soft borders
+const PAPER = 'var(--brand-bg, #FFF9F0)';          // background
 
 const NAV = [
   { href: '/admin',            label: 'Dashboard',       icon: LayoutDashboard },
@@ -33,13 +33,17 @@ const NAV = [
   { href: '/admin/notify',     label: 'Notify Requests', icon: BellRing },
   { href: '/admin/banners',    label: 'Banners',         icon: ImageIcon },
   { href: '/admin/reports',    label: 'Sales & Profit',  icon: FileBarChart },
+  { href: '/admin/site',       label: 'Site settings',   icon: Palette },
   { href: '/admin/settings',   label: 'Settings',        icon: SettingsIcon },
 ];
 
-export default function AdminShell({ admin, children }) {
+// `site` (optional) = merged site settings from getSiteSettings(), passed by the admin layout.
+// Only `site.storeName` is used here; without it the header falls back to "Store".
+export default function AdminShell({ admin, site, children }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const storeName = site?.storeName || 'Store';
 
   async function logout() {
     await fetch('/api/admin/logout', { method: 'POST' });
@@ -74,7 +78,7 @@ export default function AdminShell({ admin, children }) {
         >
           <div className="flex flex-col leading-tight">
             <span className="font-medium text-base" style={{ color: PRIMARY }}>
-              Aninthu Magizh
+              {storeName}
             </span>
             <span
               className="text-[10px] tracking-widest uppercase mt-0.5"
@@ -165,7 +169,7 @@ export default function AdminShell({ admin, children }) {
             <Menu size={22} />
           </button>
           <span className="font-medium text-base" style={{ color: PRIMARY }}>
-            Aninthu Magizh Admin
+            {storeName} Admin
           </span>
         </header>
 

@@ -4,12 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Instagram, Facebook, Youtube } from 'lucide-react';
 
-// Palette: #8F1538 #C58A08 #FFF9F0 #E60062 #075447 #29211E
-// Keep in sync with Footer.
-const ACCENT = '#E8B84A';                  // light gold (derived from secondary) for contrast on crimson
-const TEXT = '#FFF9F0';                    // cream
-const TEXT_SOFT = 'rgba(255,249,240,0.75)';
-const LINE = 'rgba(255,249,240,0.2)';
+// Colours follow the admin "Site settings" theme (CSS variables from the shop layout)
+const ACCENT = 'var(--brand-secondary-light)';
+const TEXT = 'var(--brand-bg)';
+const TEXT_SOFT = 'color-mix(in srgb, var(--brand-bg) 75%, transparent)';
+const LINE = 'color-mix(in srgb, var(--brand-bg) 20%, transparent)';
 
 // Footer passes plain keys (server -> client components can't pass icon components),
 // and the icons are looked up here.

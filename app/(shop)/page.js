@@ -17,21 +17,25 @@ import Link from 'next/link';
 import { formatINR } from '@/lib/utils';
 import { toCardProduct } from '@/lib/cardProduct';
 import { liveDiscountQuery } from '@/lib/discount';
+import { getSiteSettings } from '@/lib/siteSettings';
 import { ArrowRight, Tag, Truck, RefreshCcw, ShieldCheck, Shirt, MessageCircle } from 'lucide-react';
 
 // ISR: regenerated at most every 10 minutes. Admin API routes call revalidatePath('/').
 export const revalidate = 600;
 
-// Design tokens (keep in sync with Navbar, CouponMarquee, CategoryShowcase)
-const PRIMARY = '#8F1538';
-const INK = '#29211E';
-const INK_FAINT = '#8A7A70';
-const GOLD = '#C58A08';
-const SAVINGS = '#075447';
-const LINE = '#E8D5C4';
-const WASH = 'rgba(232, 213, 196, 0.35)';
-const PAPER = '#FFF9F0';
+// Design tokens: driven by the admin "Site settings" theme (CSS variables from the shop layout)
+const PRIMARY = 'var(--brand-primary)';
+const INK = 'var(--brand-ink)';
+const INK_FAINT = 'var(--brand-ink-soft)';
+const GOLD = 'var(--brand-secondary)';
+const SAVINGS = 'var(--brand-highlight)';
+const LINE = 'var(--brand-line)';
+const WASH = 'var(--brand-wash)';
+const PAPER = 'var(--brand-bg)';
 const HAIRLINE = LINE;
+const PAPER_80 = 'color-mix(in srgb, var(--brand-bg) 80%, transparent)';
+const PAPER_75 = 'color-mix(in srgb, var(--brand-bg) 75%, transparent)';
+const PAPER_65 = 'color-mix(in srgb, var(--brand-bg) 65%, transparent)';
 const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 const FONT_SERIF = "Georgia, 'Times New Roman', serif";
 
@@ -41,9 +45,6 @@ const FEATURED_LIMIT = 4;
 const DISCOUNT_LIMIT = 4;
 const REELS_LIMIT = 10;
 const CATEGORY_LIMIT = 24;
-
-// Optional: set NEXT_PUBLIC_WHATSAPP_NUMBER (e.g. 919876543210) to show the WhatsApp band.
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
 
 const TRUST = [
   { Icon: Truck, title: 'Fast delivery', text: 'Across India' },
@@ -195,7 +196,7 @@ function ComboCard({ c, large = false }) {
   );
 }
 
-const CTA = 'inline-block px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[#C58A08] hover:bg-[#8F1538] text-[#29211E] hover:text-[#FFF9F0]';
+const CTA = 'inline-block px-8 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors bg-[var(--brand-secondary)] hover:bg-[var(--brand-primary)] text-[var(--brand-ink)] hover:text-[var(--brand-bg)]';
 
 // Thin gold rule + diamond, used as a quiet premium divider
 function GoldRule() {
@@ -220,13 +221,15 @@ export default async function HomePage() {
     reels,
     liveStreams,
   } = await getData();
+  const site = await getSiteSettings();
+  const WHATSAPP = site.whatsapp;
 
   // If nothing is flagged isFeatured yet, fall back to the next-newest products so the section never looks empty
   const featured = featuredRaw?.length ? featuredRaw : newArrivals.slice(0, FEATURED_LIMIT);
 
   return (
     <div className="overflow-x-hidden" style={{ background: PAPER }}>
-      <h1 className="sr-only">Tirupur Clothing Hub: premium clothing sourced directly from Tirupur</h1>
+      <h1 className="sr-only">{site.storeName}: {site.tagline}</h1>
 
       {/* 1. Banner */}
       <BannerCarousel banners={banners} />
@@ -265,7 +268,7 @@ export default async function HomePage() {
                 <h2 className="mt-4 text-[32px] sm:text-[52px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
                   New arrivals
                 </h2>
-                <p className="mt-3 text-[14px] font-light max-w-[44ch] leading-[1.8]" style={{ color: 'rgba(255,249,240,0.75)', fontFamily: FONT_SANS }}>
+                <p className="mt-3 text-[14px] font-light max-w-[44ch] leading-[1.8]" style={{ color: PAPER_75, fontFamily: FONT_SANS }}>
                   Fresh off the Tirupur looms this month.
                 </p>
               </div>
@@ -299,7 +302,7 @@ export default async function HomePage() {
               <h2 className="mt-4 text-[32px] sm:text-[52px] leading-[1.05]" style={{ color: PAPER, fontFamily: FONT_SERIF, fontWeight: 400 }}>
                 Best sellers
               </h2>
-              <p className="mt-3 text-[14px] font-light leading-[1.8]" style={{ color: 'rgba(255,249,240,0.65)', fontFamily: FONT_SANS }}>
+              <p className="mt-3 text-[14px] font-light leading-[1.8]" style={{ color: PAPER_65, fontFamily: FONT_SANS }}>
                 The five pieces customers love most, ranked by sales.
               </p>
             </div>
@@ -370,7 +373,7 @@ export default async function HomePage() {
                 <h2 className="mt-5 text-[34px] sm:text-[46px] leading-[1.05]" style={{ fontFamily: FONT_SERIF, fontWeight: 400 }}>
                   Featured collections
                 </h2>
-                <p className="mt-5 text-[14px] leading-[1.9] font-light max-w-[32ch]" style={{ color: 'rgba(255,249,240,0.8)', fontFamily: FONT_SANS }}>
+                <p className="mt-5 text-[14px] leading-[1.9] font-light max-w-[32ch]" style={{ color: PAPER_80, fontFamily: FONT_SANS }}>
                   Hand-picked by our team: export-grade stitching, soft cotton and fits that last wash after wash.
                 </p>
               </div>
@@ -428,7 +431,7 @@ export default async function HomePage() {
               href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hi! I need help with an order.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors hover:bg-[#075447]"
+              className="inline-flex items-center gap-2 px-7 py-3 text-[12px] font-bold tracking-[2px] uppercase transition-colors hover:bg-[var(--brand-highlight)]"
               style={{ background: PRIMARY, color: PAPER, fontFamily: FONT_SANS }}
             >
               <MessageCircle size={16} /> Chat with us
